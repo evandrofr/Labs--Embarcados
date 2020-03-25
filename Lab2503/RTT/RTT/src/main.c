@@ -23,10 +23,49 @@
 /* defines                                                              */
 /************************************************************************/
 
-#define LED_PIO       PIOC
-#define LED_PIO_ID    ID_PIOC
-#define LED_IDX       8u
-#define LED_IDX_MASK  (1u << LED_IDX)
+
+
+#define LED_PIO           PIOC                 
+#define LED_PIO_ID        ID_PIOC              
+#define LED_PIO_IDX       8                    
+#define LED_PIO_IDX_MASK  (1 << LED_PIO_IDX)   
+
+#define LED1_PIO           PIOC
+#define LED1_PIO_ID        ID_PIOC
+#define LED1_PIO_IDX       19
+#define LED1_PIO_IDX_MASK  (1 << LED1_PIO_IDX)
+
+#define LED2_PIO           PIOD
+#define LED2_PIO_ID        ID_PIOD
+#define LED2_PIO_IDX       26
+#define LED2_PIO_IDX_MASK  (1 << LED2_PIO_IDX)
+
+#define LED3_PIO           PIOD
+#define LED3_PIO_ID        ID_PIOD
+#define LED3_PIO_IDX       11
+#define LED3_PIO_IDX_MASK  (1 << LED3_PIO_IDX)
+
+#define BUT_PIO				PIOA
+#define BUT_PIO_ID			ID_PIOA
+#define BUT_PIO_IDX			11
+#define BUT_PIO_IDX_MASK (1u << BUT_PIO_IDX)
+
+
+#define BUT1_PIO				PIOA
+#define BUT1_PIO_ID				ID_PIOA
+#define BUT1_PIO_IDX			2
+#define BUT1_PIO_IDX_MASK (1u << BUT1_PIO_IDX)
+
+#define BUT3_PIO				PIOC
+#define BUT3_PIO_ID				ID_PIOC
+#define BUT3_PIO_IDX			13
+#define BUT3_PIO_IDX_MASK (1u << BUT3_PIO_IDX)
+
+#define BUT2_PIO				PIOD
+#define BUT2_PIO_ID				ID_PIOD
+#define BUT2_PIO_IDX			30
+#define BUT2_PIO_IDX_MASK (1u << BUT2_PIO_IDX)
+
 
 /************************************************************************/
 /* constants                                                            */
