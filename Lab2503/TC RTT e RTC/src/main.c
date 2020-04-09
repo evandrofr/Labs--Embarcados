@@ -34,7 +34,13 @@ typedef struct  {
 #define LED2_PIN       30
 #define LED2_PIN_MASK  (1 << LED2_PIN)
 
+#define LED3_PIO			PIOB
+#define LED3_PIO			ID_PIOB
+#define LED3_PIN		2
+#define LED3_PIN_MASK	(1 << LED3_PIN)
+
 volatile uint8_t flag_led1 = 1;
+volatile uint8_t flag_led3 = 1;
 volatile uint8_t rtc_flag = 1;
 volatile Bool f_rtt_alarme = false;
 
@@ -54,8 +60,22 @@ void TC1_Handler(void){
 	UNUSED(ul_dummy);
 
 	/** Muda o estado do LED */
-	if(flag_led1)
-		pin_toggle(LED1_PIO, LED1_PIN_MASK);
+	flag_led1 = 1;
+}
+
+void TC2_Handler(void){
+	volatile uint32_t ul_dummy;
+
+	/****************************************************************
+	* Devemos indicar ao TC que a interrupção foi satisfeita.
+	******************************************************************/
+	ul_dummy = tc_get_status(TC0, 1);
+
+	/* Avoid compiler warning */
+	UNUSED(ul_dummy);
+
+	/** Muda o estado do LED */
+	flag_led3 = 1;
 }
 
 void RTT_Handler(void){
@@ -198,14 +218,16 @@ int main (void){
 	LED_init(1);
 	
 	/** Configura timer TC0, canal 1 */
+	TC_init(TC0, ID_TC3, 3, 5);
 	TC_init(TC0, ID_TC1, 1, 4);
+	
 
   // Init OLED
 	gfx_mono_ssd1306_init();
   
   // Escreve na tela um circulo e um texto
 	gfx_mono_draw_filled_circle(20, 16, 16, GFX_PIXEL_SET, GFX_WHOLE);
-  gfx_mono_draw_string("eita", 50,16, &sysfont);
+  gfx_mono_draw_string(":'(", 50,16, &sysfont);
   
  	/** Configura RTC */
 	calendar rtc_initial = {2018, 3, 19, 12, 15, 45 ,1};
@@ -220,6 +242,16 @@ int main (void){
   /* Insert application code here, after the board has been initialized. */
 	while(1) {
 		pmc_sleep(SAM_PM_SMODE_SLEEP_WFI);
+		
+		if(flag_led1){
+			pin_toggle(LED1_PIO, LED1_PIN_MASK);
+			flag_led1 = 0;
+		}
+		
+		if(flag_led3){
+			pin_toggle(LED3_PIO, LED3_PIN_MASK);
+			flag_led3 = 0;
+		}
 		
 		if(rtc_flag){
 			for(int i = 0; i < 11; i++){
