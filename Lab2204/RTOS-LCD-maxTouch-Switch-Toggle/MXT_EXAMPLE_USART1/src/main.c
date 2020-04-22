@@ -8,10 +8,7 @@
 #include "tfont.h"
 #include "digital521.h"
 
-/************************************************************************/
-/* prototypes                                                           */
-/************************************************************************/
-void but1_callback(void);
+
 
 
 /************************************************************************/
@@ -55,12 +52,38 @@ typedef struct {
 	uint32_t x;         // posicao x
 	uint32_t y;         // posicao y
 	uint32_t status;
+	void (*callback)(t_but);
 } t_but;
+/************************************************************************/
+/* prototypes                                                           */
+/************************************************************************/
+void but0_callback(t_but *but);
+void but1_callback(t_but *but);
+void but2_callback(t_but *but);
+
+void draw_button_new(t_but but);
+
+volatile char but0_flag = 0;
+volatile char but1_flag = 0;
+volatile char but2_flag = 0;
 
 /************************************************************************/
 /* handler/callbacks                                                    */
 /************************************************************************/
+void but0_callback(t_but *but){
+	but->status = !but->status;
+	draw_button_new(*but);
+	
+}
+void but1_callback(t_but *but){
+	but->status = !but->status;
+	draw_button_new(*but);
+}
 
+void but2_callback(t_but *but){
+	but->status = !but->status;
+	draw_button_new(*but);
+}
 
 /************************************************************************/
 /* RTOS hooks                                                           */
@@ -193,7 +216,7 @@ void draw_button_new(t_but but){
 }
 
 int process_touch(t_but botoes[], touchData touch, uint32_t n){
-	for(int i = 0; i < n - 1; i++){
+	for(int i = 0; i < n; i++){
 		if((touch.x > (botoes[i].x - botoes[i].width/2)) && (touch.x < (botoes[i].x + botoes[i].width/2))){
 			if((touch.y > (botoes[i].y - botoes[i].height/2)) && (touch.y < (botoes[i].y + botoes[i].height/2))){
 				return i;
@@ -276,11 +299,11 @@ void task_lcd(void){
   draw_button(0);
   
   t_but but0= {.width = 120, .height = 75, .colorOn = COLOR_TOMATO, .colorOff = COLOR_BLACK,
-  .x = ILI9488_LCD_WIDTH/2, .y = 435, .status = 0 };
+  .x = ILI9488_LCD_WIDTH/2, .y = 435, .status = 0, .callback = &but0_callback };
   t_but but1= {.width = 120, .height = 75, .colorOn = COLOR_TURQUOISE, .colorOff = COLOR_GRAY,
-  .x = ILI9488_LCD_WIDTH/2, .y = 355, .status = 0 };
+  .x = ILI9488_LCD_WIDTH/2, .y = 355, .status = 0, .callback = &but1_callback };
    t_but but2= {.width = 120, .height = 75, .colorOn = COLOR_GREEN, .colorOff = COLOR_YELLOW,
-   .x = ILI9488_LCD_WIDTH/2, .y = 100, .status = 0 };
+   .x = ILI9488_LCD_WIDTH/2, .y = 100, .status = 0, .callback = &but2_callback };
   
   t_but botoes[] = {but0, but1, but2};
 
@@ -297,12 +320,13 @@ void task_lcd(void){
   
   while (true) {
     if (xQueueReceive( xQueueTouch, &(touch), ( TickType_t )  500 / portTICK_PERIOD_MS)) {
-      update_screen(touch.x, touch.y);
-	  int b = process_touch(botoes, touch, sizeof(botoes));
+      /*update_screen(touch.x, touch.y);*/
+	  
+	 int b = process_touch(botoes, touch, 3);
+	 
 	  if(b >= 0){
-		  botoes[b].status = !botoes[b].status;
-		  draw_button_new(botoes[b]);
-	  }
+		  botoes[b].callback(&botoes[b]);
+	  }
 	  
 // 	  but0.status = ! but0.status;
 // 	  but1.status = ! but1.status;
@@ -311,7 +335,7 @@ void task_lcd(void){
 // 	  draw_button_new(but0);
 // 	  draw_button_new(but1);
 // 	  draw_button_new(but2);
-// 	  
+	  
  	  printf("x:%d y:%d\n", touch.x, touch.y);
     }
   }
@@ -350,6 +374,23 @@ int main(void){
   vTaskStartScheduler();
 
   while(1){
+// 	  if(but0_flag){
+//  		  but0.status = !but0.status;
+//  		  draw_button_new(but0);
+// 		   but0_flag = 0;
+// 	  }
+// 	  
+// 	  if(but1_flag){
+//  		  but1.status = !but1.status;
+//  		  draw_button_new(but1);
+// 		   but1_flag = 0;
+// 	  }
+// 	  
+// 	  if(but2_flag){
+//  		  but2.status = !but2.status;
+//  		  draw_button_new(but2);
+// 		   but2_flag = 0;
+// 	  }
 
   }
 
