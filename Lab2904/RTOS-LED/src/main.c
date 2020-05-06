@@ -237,8 +237,9 @@ static void task_execute(void *pvParameters) {
 		if (xQueueReceive(xQueueCommand, &msgBuffer, (TickType_t)500)) {
 			printf("Mensagem: %s\n", msgBuffer);
 			
-			if (strcmp(msgBuffer, "led 1 toggle") == 0){
-				 pin_toggle(LED1_PIO, LED1_IDX_MASK);
+			if (strcmp(msgBuffer, "led 1 toggle") == 0) {
+				led1 = !led1;
+				xQueueSend(xQueueLED1, &led1, 0);
 			}
 			
 			if (strcmp(msgBuffer, "led 2 toggle") == 0) {
@@ -247,7 +248,39 @@ static void task_execute(void *pvParameters) {
 			}
 			
 			if (strcmp(msgBuffer, "led 3 toggle") == 0) {
-				pin_toggle(LED3_PIO, LED3_IDX_MASK);
+				led3 = !led3;
+				xQueueSend(xQueueLED3, &led3, 0);
+			}
+						
+			
+			if (strcmp(msgBuffer, "led 1 on") == 0) {
+				on1 = 1;
+				xQueueSend(xQueueLED1on, &on1, 0);
+			}
+			
+			if (strcmp(msgBuffer, "led 2 on") == 0) {
+				on1 = 1;
+				xQueueSend(xQueueLED2on, &on1, 0);
+			}
+			
+			if (strcmp(msgBuffer, "led 3 on") == 0) {
+				on1 = 1;
+				xQueueSend(xQueueLED3on, &on1, 0);
+			}
+						
+			if (strcmp(msgBuffer, "led 1 off") == 0) {
+				on1 = 0;
+				xQueueSend(xQueueLED1on, &on1, 0);
+			}
+
+			if (strcmp(msgBuffer, "led 2 off") == 0) {
+				on1 = 0;
+				xQueueSend(xQueueLED2on, &on1, 0);
+			}
+			
+			if (strcmp(msgBuffer, "led 3 off") == 0) {
+				on1 = 0;
+				xQueueSend(xQueueLED3on, &on1, 0);
 			}
 		}
 	}
@@ -280,10 +313,9 @@ static void task_led1(void *pvParameters){
 	/* Block for 2000ms. */
 	xQueueLED1 = xQueueCreate(5, sizeof(int));
 	xQueueLED1on = xQueueCreate(5, sizeof(int));
-	int i;
-	int on;
+	int i, on;
 
-	for (;;){
+	while(1){
 		if (xQueueReceive(xQueueLED1, &(i), (TickType_t)500)) {
 			if (i) {
 				pin_toggle(LED1_PIO, LED1_IDX_MASK);
@@ -308,10 +340,9 @@ static void task_led2(void *pvParameters){
 	/* Block for 2000ms. */
 	xQueueLED2 = xQueueCreate(5, sizeof(int));
 	xQueueLED2on = xQueueCreate(5, sizeof(int));
-	int i;
-	int on;
+	int i,on;
 
-	for (;;){
+	while(1){
 		if (xQueueReceive(xQueueLED2, &(i), (TickType_t)500)) {
 			if (i) {
 				pin_toggle(LED2_PIO, LED2_IDX_MASK);
@@ -334,10 +365,9 @@ static void task_led3(void *pvParameters){
 	/* Block for 2000ms. */
 	xQueueLED3 = xQueueCreate(5, sizeof(int));
 	xQueueLED3on = xQueueCreate(5, sizeof(int));
-	int i;
-	int on;
+	int i, on;
 
-	for (;;){
+	while(1){
 		if (xQueueReceive(xQueueLED3, &(i), (TickType_t)500)) {
 			if (i) {
 				pin_toggle(LED3_PIO, LED3_IDX_MASK);
@@ -477,20 +507,24 @@ int main(void){
 	}
 
 	/* Create task to make led blink */
-	if (xTaskCreate(task_led2, "Led2", TASK_LED2_STACK_SIZE, NULL, TASK_LED2_STACK_PRIORITY, NULL) != pdPASS)
-	printf("Failed to create test led2 task\r\n");
+	if (xTaskCreate(task_led2, "Led2", TASK_LED2_STACK_SIZE, NULL, TASK_LED2_STACK_PRIORITY, NULL) != pdPASS){
+		printf("Failed to create test led2 task\r\n");
+	}
 
 	/* Create task to make led blink */
-	if (xTaskCreate(task_led3, "Led3", TASK_LED3_STACK_SIZE, NULL, TASK_LED3_STACK_PRIORITY, NULL) != pdPASS)
-	printf("Failed to create test led3 task\r\n");
+	if (xTaskCreate(task_led3, "Led3", TASK_LED3_STACK_SIZE, NULL, TASK_LED3_STACK_PRIORITY, NULL) != pdPASS){
+		printf("Failed to create test led3 task\r\n");
+	}
 
 	// Create UART RX task
-	if (xTaskCreate(task_uartRX, "UART-RX", TASK_UARTRX_STACK_SIZE, NULL, TASK_UARTRX_STACK_PRIORITY, NULL) != pdPASS)
-	printf("Failed to create UART-RX task\r\n");
-
+	if (xTaskCreate(task_uartRX, "UART-RX", TASK_UARTRX_STACK_SIZE, NULL, TASK_UARTRX_STACK_PRIORITY, NULL) != pdPASS){
+		printf("Failed to create UART-RX task\r\n");
+	}
+	
 	// Create EXECUTE task
-	if (xTaskCreate(task_execute, "EXECUTE", TASK_EXECUTE_STACK_SIZE, NULL, TASK_EXECUTE_STACK_PRIORITY, NULL) != pdPASS)
-	printf("Failed to create EXECUTE task\r\n");
+	if (xTaskCreate(task_execute, "EXECUTE", TASK_EXECUTE_STACK_SIZE, NULL, TASK_EXECUTE_STACK_PRIORITY, NULL) != pdPASS){
+		printf("Failed to create EXECUTE task\r\n");
+	}
 
 	/* Start the scheduler. */
 	vTaskStartScheduler();
