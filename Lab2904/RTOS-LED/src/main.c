@@ -10,6 +10,11 @@
 Define
 ********************************************************/
 // LEDs
+#define LED_PIO PIOC
+#define LED_PIO_ID ID_PIOC
+#define LED_IDX 8
+#define LED_IDX_MASK (1 << LED_IDX)
+
 #define LED1_PIO PIOA
 #define LED1_PIO_ID ID_PIOA
 #define LED1_IDX 0
@@ -27,6 +32,11 @@ Define
 
 
 //BUTs
+#define BUT_PIO PIOA
+#define BUT_PIO_ID ID_PIOA
+#define BUT_PIO_IDX 11
+#define BUT_PIO_IDX_MASK (1u << BUT_PIO_IDX)
+
 #define BUT1_PIO PIOD
 #define BUT1_PIO_ID 16
 #define BUT1_PIO_IDX 28
@@ -43,6 +53,9 @@ Define
 #define BUT3_PIO_IDX_MASK (1 << BUT3_PIO_IDX)
 
 //TASKs
+#define TASK_LED_STACK_SIZE                (1024/sizeof(portSTACK_TYPE))
+#define TASK_LED_STACK_PRIORITY            (tskIDLE_PRIORITY)
+
 #define TASK_LED1_STACK_SIZE (1024 / sizeof(portSTACK_TYPE))
 #define TASK_LED1_STACK_PRIORITY (tskIDLE_PRIORITY)
 
@@ -55,8 +68,6 @@ Define
 #define TASK_MONITOR_STACK_SIZE            (2048/sizeof(portSTACK_TYPE))
 #define TASK_MONITOR_STACK_PRIORITY        (tskIDLE_PRIORITY)
 
-#define TASK_LED_STACK_SIZE                (1024/sizeof(portSTACK_TYPE))
-#define TASK_LED_STACK_PRIORITY            (tskIDLE_PRIORITY)
 
 #define TASK_UARTRX_STACK_SIZE (1024 / sizeof(portSTACK_TYPE))
 #define TASK_UARTRX_STACK_PRIORITY (tskIDLE_PRIORITY)
@@ -82,6 +93,7 @@ QueueHandle_t xQueueLED3on;
 /** Semaforo a ser usado pela task led 
     tem que ser var global! */
 SemaphoreHandle_t xSemaphore;
+SemaphoreHandle_t xSemaphore1;
 SemaphoreHandle_t xSemaphore2;
 SemaphoreHandle_t xSemaphore3;
 
@@ -130,14 +142,58 @@ extern void vApplicationMallocFailedHook(void){
 }
 
 
+
+
+
+
+
+
+
+/**
+ * \brief This task, when activated, send every ten seconds on debug UART
+ * the whole report of free heap and total tasks status
+ */
+static void task_monitor(void *pvParameters){
+	static portCHAR szList[256];
+	UNUSED(pvParameters);
+
+	/* Block for 3000ms. */
+	const TickType_t xDelay = 3000 / portTICK_PERIOD_MS;
+
+	while(1){
+		printf("--- task ## %u\n", (unsigned int)uxTaskGetNumberOfTasks());
+		vTaskList((signed portCHAR *)szList);
+		printf(szList);
+		vTaskDelay(xDelay);
+	}
+}
+/***********************************************************
+FUNCTIONS
+***********************************************************/
+void pin_toggle(Pio *pio, uint32_t mask) {
+	if (pio_get_output_data_status(pio, mask)) pio_clear(pio, mask);
+	else pio_set(pio, mask);
+}
+
+
+/*******************************************************
+TASKs + Callback
+*******************************************************/
 /**
 * callback do botao
 * libera semaforo: xSemaphore
 */
-void but1_callback(void){
+void but_callback(void){
 	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 	printf("but_callback \n");
 	xSemaphoreGiveFromISR(xSemaphore, &xHigherPriorityTaskWoken);
+	printf("semafaro tx \n");
+}
+
+void but1_callback(void){
+	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+	printf("but1_callback \n");
+	xSemaphoreGiveFromISR(xSemaphore1, &xHigherPriorityTaskWoken);
 	printf("semafaro tx \n");
 }
 
@@ -165,12 +221,12 @@ static void task_led(void *pvParameters) {
   os recursos (no caso semaforo), nessa funcao inicializamos 
   o botao e seu callback*/
   /* init botão */
-  pmc_enable_periph_clk(BUT1_PIO_ID);
-  pio_configure(BUT1_PIO, PIO_INPUT, BUT1_PIO_IDX_MASK, PIO_PULLUP);
-  pio_handler_set(BUT1_PIO, BUT1_PIO_ID, BUT1_PIO_IDX_MASK, PIO_IT_FALL_EDGE, but1_callback);
-  pio_enable_interrupt(BUT1_PIO, BUT1_PIO_IDX_MASK);
-  NVIC_EnableIRQ(BUT1_PIO_ID);
-  NVIC_SetPriority(BUT1_PIO_ID, 4); // Prioridade 4
+  pmc_enable_periph_clk(BUT_PIO_ID);
+  pio_configure(BUT_PIO, PIO_INPUT, BUT_PIO_IDX_MASK, PIO_PULLUP);
+  pio_handler_set(BUT_PIO, BUT_PIO_ID, BUT_PIO_IDX_MASK, PIO_IT_FALL_EDGE, but_callback);
+  pio_enable_interrupt(BUT_PIO, BUT_PIO_IDX_MASK);
+  NVIC_EnableIRQ(BUT_PIO_ID);
+  NVIC_SetPriority(BUT_PIO_ID, 4); // Prioridade 4
 
   if (xSemaphore == NULL)
     printf("falha em criar o semaforo \n");
@@ -181,129 +237,6 @@ static void task_led(void *pvParameters) {
     }
   }
 }
-
-/***********************************************************
-FUNCTIONS
-***********************************************************/
-void pin_toggle(Pio *pio, uint32_t mask) {
-	if (pio_get_output_data_status(pio, mask)) pio_clear(pio, mask);
-	else pio_set(pio, mask);
-}
-
-uint32_t usart1_puts(uint8_t *pstring) {
-	uint32_t i;
-
-	while (*(pstring + i))
-	if (uart_is_tx_empty(USART1)) usart_serial_putchar(USART1, *(pstring + i++));
-}
-
-/*****************************************************************************
-TASK
-******************************************************************************/
-static void task_uartRX(void *pvParameters) {
-	char rxMsg;
-	char msgBuffer[64] = {0};
-	int i = 0;
-
-	xQueueRx = xQueueCreate(32, sizeof(char));
-
-	while (1) {
-		if (xQueueReceive(xQueueRx, &rxMsg, (TickType_t)500)) {
-			printf("Recebido: %c\n", rxMsg);
-
-			if (rxMsg == '\n') {
-				msgBuffer[i] = 0;
-				xQueueSend(xQueueCommand, &msgBuffer, 0);
-				i = 0;
-			} else {
-				msgBuffer[i] = rxMsg;
-				i++;
-			}
-		}
-	}
-}
-
-static void task_execute(void *pvParameters) {
-	char msgBuffer[64];
-	
-	int led1 = 0;
-	int led2 = 0;
-	int led3 = 0;
-
-	int on1;
-	xQueueCommand = xQueueCreate(5, sizeof(char[64]));
-
-	while (1) {
-		if (xQueueReceive(xQueueCommand, &msgBuffer, (TickType_t)500)) {
-			printf("Mensagem: %s\n", msgBuffer);
-			
-			if (strcmp(msgBuffer, "led 1 toggle") == 0) {
-				led1 = !led1;
-				xQueueSend(xQueueLED1, &led1, 0);
-			}
-			
-			if (strcmp(msgBuffer, "led 2 toggle") == 0) {
-				led2 = !led2;
-				xQueueSend(xQueueLED2, &led2, 0);
-			}
-			
-			if (strcmp(msgBuffer, "led 3 toggle") == 0) {
-				led3 = !led3;
-				xQueueSend(xQueueLED3, &led3, 0);
-			}
-						
-			
-			if (strcmp(msgBuffer, "led 1 on") == 0) {
-				on1 = 1;
-				xQueueSend(xQueueLED1on, &on1, 0);
-			}
-			
-			if (strcmp(msgBuffer, "led 2 on") == 0) {
-				on1 = 1;
-				xQueueSend(xQueueLED2on, &on1, 0);
-			}
-			
-			if (strcmp(msgBuffer, "led 3 on") == 0) {
-				on1 = 1;
-				xQueueSend(xQueueLED3on, &on1, 0);
-			}
-						
-			if (strcmp(msgBuffer, "led 1 off") == 0) {
-				on1 = 0;
-				xQueueSend(xQueueLED1on, &on1, 0);
-			}
-
-			if (strcmp(msgBuffer, "led 2 off") == 0) {
-				on1 = 0;
-				xQueueSend(xQueueLED2on, &on1, 0);
-			}
-			
-			if (strcmp(msgBuffer, "led 3 off") == 0) {
-				on1 = 0;
-				xQueueSend(xQueueLED3on, &on1, 0);
-			}
-		}
-	}
-}
-/**
- * \brief This task, when activated, send every ten seconds on debug UART
- * the whole report of free heap and total tasks status
- */
-static void task_monitor(void *pvParameters){
-	static portCHAR szList[256];
-	UNUSED(pvParameters);
-
-	/* Block for 3000ms. */
-	const TickType_t xDelay = 3000 / portTICK_PERIOD_MS;
-
-	while(1){
-		printf("--- task ## %u\n", (unsigned int)uxTaskGetNumberOfTasks());
-		vTaskList((signed portCHAR *)szList);
-		printf(szList);
-		vTaskDelay(xDelay);
-	}
-}
-
 
 static void task_led1(void *pvParameters){
 	pmc_enable_periph_clk(LED1_PIO_ID);
@@ -383,36 +316,11 @@ static void task_led3(void *pvParameters){
 		}
 	}
 }
-/**
- * \brief Configure the console UART.
- */
-static void configure_console(void){
-	const usart_serial_options_t uart_serial_options = {
-		.baudrate = CONF_UART_BAUDRATE,
-#if (defined CONF_UART_CHAR_LENGTH)
-		.charlength = CONF_UART_CHAR_LENGTH,
-#endif
-		.paritytype = CONF_UART_PARITY,
-#if (defined CONF_UART_STOP_BITS)
-		.stopbits = CONF_UART_STOP_BITS,
-#endif
-	};
 
-	/* Configure console UART. */
-	stdio_serial_init(CONF_UART, &uart_serial_options);
 
-	/* Specify that stdout should not be buffered. */
-#if defined(__GNUC__)
-	setbuf(stdout, NULL);
-#else
-	/* Already the case in IAR's Normal DLIB default configuration: printf()
-	 * emits one character at a time.
-	 */
-#endif
-}
-/*******************************************************************************
-INIT
-*******************************************************************************/
+/********************************************************************
+USART
+********************************************************************/
 static void USART1_init(void){
 	/* Configura USART1 Pinos */
 	sysclk_enable_peripheral_clock(ID_PIOB);
@@ -447,7 +355,6 @@ static void USART1_init(void){
 	NVIC_SetPriority(ID_USART1, 4);
 	NVIC_EnableIRQ(ID_USART1);
 }
-
 void USART1_Handler(void){
 	uint32_t ret = usart_get_status(USART1);
 
@@ -466,6 +373,132 @@ void USART1_Handler(void){
 	}
 	else if (ret & US_IER_TXRDY)
 	{
+	}
+}
+
+uint32_t usart1_puts(uint8_t *pstring) {
+	uint32_t i;
+
+	while (*(pstring + i))
+	if (uart_is_tx_empty(USART1)) usart_serial_putchar(USART1, *(pstring + i++));
+}
+
+
+/**********************************************************
+ * \brief Configure the console UART.
+ ************************************************************/
+static void configure_console(void){
+	const usart_serial_options_t uart_serial_options = {
+		.baudrate = CONF_UART_BAUDRATE,
+#if (defined CONF_UART_CHAR_LENGTH)
+		.charlength = CONF_UART_CHAR_LENGTH,
+#endif
+		.paritytype = CONF_UART_PARITY,
+#if (defined CONF_UART_STOP_BITS)
+		.stopbits = CONF_UART_STOP_BITS,
+#endif
+	};
+
+	/* Configure console UART. */
+	stdio_serial_init(CONF_UART, &uart_serial_options);
+
+	/* Specify that stdout should not be buffered. */
+#if defined(__GNUC__)
+	setbuf(stdout, NULL);
+#else
+	/* Already the case in IAR's Normal DLIB default configuration: printf()
+	 * emits one character at a time.
+	 */
+#endif
+}
+/*********************************************************************
+TASK
+*********************************************************************/
+static void task_uartRX(void *pvParameters) {
+	char rxMsg;
+	char msgBuffer[64] = {0};
+	int i = 0;
+
+	xQueueRx = xQueueCreate(32, sizeof(char));
+
+	while (1) {
+		if (xQueueReceive(xQueueRx, &rxMsg, (TickType_t)500)) {
+			printf("Recebido: %c\n", rxMsg);
+
+			if (rxMsg == '\n') {
+				msgBuffer[i] = 0;
+				xQueueSend(xQueueCommand, &msgBuffer, 0);
+				i = 0;
+				} else {
+				msgBuffer[i] = rxMsg;
+				i++;
+			}
+		}
+	}
+}
+
+
+
+static void task_execute(void *pvParameters) {
+	char msgBuffer[64];
+	
+	int led1 = 0;
+	int led2 = 0;
+	int led3 = 0;
+
+	int on1;
+	xQueueCommand = xQueueCreate(5, sizeof(char[64]));
+
+	while (1) {
+		if (xQueueReceive(xQueueCommand, &msgBuffer, (TickType_t)500)) {
+			printf("Mensagem: %s\n", msgBuffer);
+			
+			if (strcmp(msgBuffer, "led 1 toggle") == 0) {
+				led1 = !led1;
+				xQueueSend(xQueueLED1, &led1, 0);
+			}
+			
+			if (strcmp(msgBuffer, "led 2 toggle") == 0) {
+				led2 = !led2;
+				xQueueSend(xQueueLED2, &led2, 0);
+			}
+			
+			if (strcmp(msgBuffer, "led 3 toggle") == 0) {
+				led3 = !led3;
+				xQueueSend(xQueueLED3, &led3, 0);
+			}
+			
+			
+			if (strcmp(msgBuffer, "led 1 on") == 0) {
+				on1 = 1;
+				xQueueSend(xQueueLED1on, &on1, 0);
+			}
+			
+			if (strcmp(msgBuffer, "led 2 on") == 0) {
+				on1 = 1;
+				xQueueSend(xQueueLED2on, &on1, 0);
+			}
+			
+			if (strcmp(msgBuffer, "led 3 on") == 0) {
+				on1 = 1;
+				xQueueSend(xQueueLED3on, &on1, 0);
+			}
+			
+			if (strcmp(msgBuffer, "led 1 off") == 0) {
+				on1 = 0;
+				xQueueSend(xQueueLED1on, &on1, 0);
+			}
+
+			if (strcmp(msgBuffer, "led 2 off") == 0) {
+				on1 = 0;
+				xQueueSend(xQueueLED2on, &on1, 0);
+			}
+			
+			if (strcmp(msgBuffer, "led 3 off") == 0) {
+				on1 = 0;
+				xQueueSend(xQueueLED3on, &on1, 0);
+			}
+		}
 	}
 }
 

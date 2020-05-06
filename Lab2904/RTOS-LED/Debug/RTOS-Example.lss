@@ -9,9 +9,9 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
   2 .relocate     000009b8  20400000  0040aa44  00020000  2**3
                   CONTENTS, ALLOC, LOAD, DATA
-  3 .bss          000003bc  204009b8  0040b3fc  000209b8  2**2
+  3 .bss          000003c0  204009b8  0040b3fc  000209b8  2**2
                   ALLOC
-  4 .stack        00002004  20400d74  0040b7b8  000209b8  2**0
+  4 .stack        00002000  20400d78  0040b7bc  000209b8  2**0
                   ALLOC
   5 .heap         00000200  20402d78  0040d7bc  000209b8  2**0
                   ALLOC
@@ -19,23 +19,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   7 .comment      00000059  00000000  00000000  000209e6  2**0
                   CONTENTS, READONLY
-  8 .debug_info   00020359  00000000  00000000  00020a3f  2**0
+  8 .debug_info   000203da  00000000  00000000  00020a3f  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_abbrev 0000411a  00000000  00000000  00040d98  2**0
+  9 .debug_abbrev 000040ef  00000000  00000000  00040e19  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    00009831  00000000  00000000  00044eb2  2**0
+ 10 .debug_loc    00009869  00000000  00000000  00044f08  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_aranges 00000ef0  00000000  00000000  0004e6e3  2**0
+ 11 .debug_aranges 00000ef8  00000000  00000000  0004e771  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 000011e8  00000000  00000000  0004f5d3  2**0
+ 12 .debug_ranges 000011f0  00000000  00000000  0004f669  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_macro  00023423  00000000  00000000  000507bb  2**0
+ 13 .debug_macro  00023453  00000000  00000000  00050859  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_line   00010ef8  00000000  00000000  00073bde  2**0
+ 14 .debug_line   00010f15  00000000  00000000  00073cac  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_str    0009ce65  00000000  00000000  00084ad6  2**0
+ 15 .debug_str    0009cf18  00000000  00000000  00084bc1  2**0
                   CONTENTS, READONLY, DEBUGGING
- 16 .debug_frame  000037ec  00000000  00000000  0012193c  2**2
+ 16 .debug_frame  0000380c  00000000  00000000  00121adc  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -2248,7 +2248,7 @@ static inline void cpu_irq_restore(irqflags_t flags)
   400d3c:	20400000 	.word	0x20400000
   400d40:	0040aa44 	.word	0x0040aa44
   400d44:	204009b8 	.word	0x204009b8
-  400d48:	20400d74 	.word	0x20400d74
+  400d48:	20400d78 	.word	0x20400d78
   400d4c:	204009b8 	.word	0x204009b8
   400d50:	e000ed00 	.word	0xe000ed00
   400d54:	00400000 	.word	0x00400000
@@ -7499,13 +7499,13 @@ Timer_t * const pxTimer = ( Timer_t * ) listGET_OWNER_OF_HEAD_ENTRY( pxCurrentTi
   40322c:	e000ed04 	.word	0xe000ed04
   403230:	00400fb9 	.word	0x00400fb9
 
-00403234 <but1_callback>:
-
+00403234 <but_callback>:
+*******************************************************/
 /**
 * callback do botao
 * libera semaforo: xSemaphore
 */
-void but1_callback(void){
+void but_callback(void){
   403234:	b530      	push	{r4, r5, lr}
   403236:	b083      	sub	sp, #12
 	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -7513,17 +7513,17 @@ void but1_callback(void){
   40323a:	2300      	movs	r3, #0
   40323c:	f844 3d04 	str.w	r3, [r4, #-4]!
 	printf("but_callback \n");
-  403240:	4805      	ldr	r0, [pc, #20]	; (403258 <but1_callback+0x24>)
-  403242:	4d06      	ldr	r5, [pc, #24]	; (40325c <but1_callback+0x28>)
+  403240:	4805      	ldr	r0, [pc, #20]	; (403258 <but_callback+0x24>)
+  403242:	4d06      	ldr	r5, [pc, #24]	; (40325c <but_callback+0x28>)
   403244:	47a8      	blx	r5
 	xSemaphoreGiveFromISR(xSemaphore, &xHigherPriorityTaskWoken);
   403246:	4621      	mov	r1, r4
-  403248:	4b05      	ldr	r3, [pc, #20]	; (403260 <but1_callback+0x2c>)
+  403248:	4b05      	ldr	r3, [pc, #20]	; (403260 <but_callback+0x2c>)
   40324a:	6818      	ldr	r0, [r3, #0]
-  40324c:	4b05      	ldr	r3, [pc, #20]	; (403264 <but1_callback+0x30>)
+  40324c:	4b05      	ldr	r3, [pc, #20]	; (403264 <but_callback+0x30>)
   40324e:	4798      	blx	r3
 	printf("semafaro tx \n");
-  403250:	4805      	ldr	r0, [pc, #20]	; (403268 <but1_callback+0x34>)
+  403250:	4805      	ldr	r0, [pc, #20]	; (403268 <but_callback+0x34>)
   403252:	47a8      	blx	r5
 }
   403254:	b003      	add	sp, #12
@@ -7534,330 +7534,285 @@ void but1_callback(void){
   403264:	00401981 	.word	0x00401981
   403268:	0040a500 	.word	0x0040a500
 
-0040326c <usart_serial_putchar>:
- *   \retval 1  The character was written.
- *   \retval 0  The function timed out before the USART transmitter became
- * ready to send.
- */
-static inline int usart_serial_putchar(usart_if p_usart, const uint8_t c)
-{
-  40326c:	b570      	push	{r4, r5, r6, lr}
-  40326e:	460c      	mov	r4, r1
-		while (uart_write((Uart*)p_usart, c)!=0);
-		return 1;
-	}
-#else
-# ifdef UART0
-	if (UART0 == (Uart*)p_usart) {
-  403270:	4b2a      	ldr	r3, [pc, #168]	; (40331c <usart_serial_putchar+0xb0>)
-  403272:	4298      	cmp	r0, r3
-  403274:	d013      	beq.n	40329e <usart_serial_putchar+0x32>
-		while (uart_write((Uart*)p_usart, c)!=0);
-		return 1;
-	}
-# endif
-# ifdef UART1
-	if (UART1 == (Uart*)p_usart) {
-  403276:	4b2a      	ldr	r3, [pc, #168]	; (403320 <usart_serial_putchar+0xb4>)
-  403278:	4298      	cmp	r0, r3
-  40327a:	d019      	beq.n	4032b0 <usart_serial_putchar+0x44>
-		while (uart_write((Uart*)p_usart, c)!=0);
-		return 1;
-	}
-# endif
-# ifdef UART2
-	if (UART2 == (Uart*)p_usart) {
-  40327c:	4b29      	ldr	r3, [pc, #164]	; (403324 <usart_serial_putchar+0xb8>)
-  40327e:	4298      	cmp	r0, r3
-  403280:	d01f      	beq.n	4032c2 <usart_serial_putchar+0x56>
-		while (uart_write((Uart*)p_usart, c)!=0);
-		return 1;
-	}
-# endif
-# ifdef UART3
-	if (UART3 == (Uart*)p_usart) {
-  403282:	4b29      	ldr	r3, [pc, #164]	; (403328 <usart_serial_putchar+0xbc>)
-  403284:	4298      	cmp	r0, r3
-  403286:	d025      	beq.n	4032d4 <usart_serial_putchar+0x68>
-		while (usart_write(p_usart, c)!=0);
-		return 1;
-	}
-#else
-# ifdef USART0
-	if (USART0 == p_usart) {
-  403288:	4b28      	ldr	r3, [pc, #160]	; (40332c <usart_serial_putchar+0xc0>)
-  40328a:	4298      	cmp	r0, r3
-  40328c:	d02b      	beq.n	4032e6 <usart_serial_putchar+0x7a>
-		while (usart_write(p_usart, c)!=0);
-		return 1;
-	}
-# endif
-# ifdef USART1
-	if (USART1 == p_usart) {
-  40328e:	4b28      	ldr	r3, [pc, #160]	; (403330 <usart_serial_putchar+0xc4>)
-  403290:	4298      	cmp	r0, r3
-  403292:	d031      	beq.n	4032f8 <usart_serial_putchar+0x8c>
-		while (usart_write(p_usart, c)!=0);
-		return 1;
-	}
-# endif
-# ifdef USART2
-	if (USART2 == p_usart) {
-  403294:	4b27      	ldr	r3, [pc, #156]	; (403334 <usart_serial_putchar+0xc8>)
-  403296:	4298      	cmp	r0, r3
-  403298:	d037      	beq.n	40330a <usart_serial_putchar+0x9e>
-		return 1;
-	}
-# endif
-#endif /* ifdef USART */
-
-	return 0;
-  40329a:	2000      	movs	r0, #0
-}
-  40329c:	bd70      	pop	{r4, r5, r6, pc}
-		while (uart_write((Uart*)p_usart, c)!=0);
-  40329e:	461e      	mov	r6, r3
-  4032a0:	4d25      	ldr	r5, [pc, #148]	; (403338 <usart_serial_putchar+0xcc>)
-  4032a2:	4621      	mov	r1, r4
-  4032a4:	4630      	mov	r0, r6
-  4032a6:	47a8      	blx	r5
-  4032a8:	2800      	cmp	r0, #0
-  4032aa:	d1fa      	bne.n	4032a2 <usart_serial_putchar+0x36>
-		return 1;
-  4032ac:	2001      	movs	r0, #1
-  4032ae:	bd70      	pop	{r4, r5, r6, pc}
-		while (uart_write((Uart*)p_usart, c)!=0);
-  4032b0:	461e      	mov	r6, r3
-  4032b2:	4d21      	ldr	r5, [pc, #132]	; (403338 <usart_serial_putchar+0xcc>)
-  4032b4:	4621      	mov	r1, r4
-  4032b6:	4630      	mov	r0, r6
-  4032b8:	47a8      	blx	r5
-  4032ba:	2800      	cmp	r0, #0
-  4032bc:	d1fa      	bne.n	4032b4 <usart_serial_putchar+0x48>
-		return 1;
-  4032be:	2001      	movs	r0, #1
-  4032c0:	bd70      	pop	{r4, r5, r6, pc}
-		while (uart_write((Uart*)p_usart, c)!=0);
-  4032c2:	461e      	mov	r6, r3
-  4032c4:	4d1c      	ldr	r5, [pc, #112]	; (403338 <usart_serial_putchar+0xcc>)
-  4032c6:	4621      	mov	r1, r4
-  4032c8:	4630      	mov	r0, r6
-  4032ca:	47a8      	blx	r5
-  4032cc:	2800      	cmp	r0, #0
-  4032ce:	d1fa      	bne.n	4032c6 <usart_serial_putchar+0x5a>
-		return 1;
-  4032d0:	2001      	movs	r0, #1
-  4032d2:	bd70      	pop	{r4, r5, r6, pc}
-		while (uart_write((Uart*)p_usart, c)!=0);
-  4032d4:	461e      	mov	r6, r3
-  4032d6:	4d18      	ldr	r5, [pc, #96]	; (403338 <usart_serial_putchar+0xcc>)
-  4032d8:	4621      	mov	r1, r4
-  4032da:	4630      	mov	r0, r6
-  4032dc:	47a8      	blx	r5
-  4032de:	2800      	cmp	r0, #0
-  4032e0:	d1fa      	bne.n	4032d8 <usart_serial_putchar+0x6c>
-		return 1;
-  4032e2:	2001      	movs	r0, #1
-  4032e4:	bd70      	pop	{r4, r5, r6, pc}
-		while (usart_write(p_usart, c)!=0);
-  4032e6:	461e      	mov	r6, r3
-  4032e8:	4d14      	ldr	r5, [pc, #80]	; (40333c <usart_serial_putchar+0xd0>)
-  4032ea:	4621      	mov	r1, r4
-  4032ec:	4630      	mov	r0, r6
-  4032ee:	47a8      	blx	r5
-  4032f0:	2800      	cmp	r0, #0
-  4032f2:	d1fa      	bne.n	4032ea <usart_serial_putchar+0x7e>
-		return 1;
-  4032f4:	2001      	movs	r0, #1
-  4032f6:	bd70      	pop	{r4, r5, r6, pc}
-		while (usart_write(p_usart, c)!=0);
-  4032f8:	461e      	mov	r6, r3
-  4032fa:	4d10      	ldr	r5, [pc, #64]	; (40333c <usart_serial_putchar+0xd0>)
-  4032fc:	4621      	mov	r1, r4
-  4032fe:	4630      	mov	r0, r6
-  403300:	47a8      	blx	r5
-  403302:	2800      	cmp	r0, #0
-  403304:	d1fa      	bne.n	4032fc <usart_serial_putchar+0x90>
-		return 1;
-  403306:	2001      	movs	r0, #1
-  403308:	bd70      	pop	{r4, r5, r6, pc}
-		while (usart_write(p_usart, c)!=0);
-  40330a:	461e      	mov	r6, r3
-  40330c:	4d0b      	ldr	r5, [pc, #44]	; (40333c <usart_serial_putchar+0xd0>)
-  40330e:	4621      	mov	r1, r4
-  403310:	4630      	mov	r0, r6
-  403312:	47a8      	blx	r5
-  403314:	2800      	cmp	r0, #0
-  403316:	d1fa      	bne.n	40330e <usart_serial_putchar+0xa2>
-		return 1;
-  403318:	2001      	movs	r0, #1
-  40331a:	bd70      	pop	{r4, r5, r6, pc}
-  40331c:	400e0800 	.word	0x400e0800
-  403320:	400e0a00 	.word	0x400e0a00
-  403324:	400e1a00 	.word	0x400e1a00
-  403328:	400e1c00 	.word	0x400e1c00
-  40332c:	40024000 	.word	0x40024000
-  403330:	40028000 	.word	0x40028000
-  403334:	4002c000 	.word	0x4002c000
-  403338:	00400b61 	.word	0x00400b61
-  40333c:	00400c71 	.word	0x00400c71
-
-00403340 <usart_serial_getchar>:
+0040326c <usart_serial_getchar>:
  * \param p_usart   Base address of the USART instance.
  * \param data   Data to read
  *
  */
 static inline void usart_serial_getchar(usart_if p_usart, uint8_t *data)
 {
-  403340:	b5f0      	push	{r4, r5, r6, r7, lr}
-  403342:	b083      	sub	sp, #12
-  403344:	4605      	mov	r5, r0
-  403346:	460c      	mov	r4, r1
+  40326c:	b5f0      	push	{r4, r5, r6, r7, lr}
+  40326e:	b083      	sub	sp, #12
+  403270:	4605      	mov	r5, r0
+  403272:	460c      	mov	r4, r1
 	uint32_t val = 0;
-  403348:	2300      	movs	r3, #0
-  40334a:	9301      	str	r3, [sp, #4]
+  403274:	2300      	movs	r3, #0
+  403276:	9301      	str	r3, [sp, #4]
 	if (UART == (Uart*)p_usart) {
 		while (uart_read((Uart*)p_usart, data));
 	}
 #else
 # ifdef UART0
 	if (UART0 == (Uart*)p_usart) {
-  40334c:	4b2a      	ldr	r3, [pc, #168]	; (4033f8 <usart_serial_getchar+0xb8>)
-  40334e:	4298      	cmp	r0, r3
-  403350:	d013      	beq.n	40337a <usart_serial_getchar+0x3a>
+  403278:	4b2a      	ldr	r3, [pc, #168]	; (403324 <usart_serial_getchar+0xb8>)
+  40327a:	4298      	cmp	r0, r3
+  40327c:	d013      	beq.n	4032a6 <usart_serial_getchar+0x3a>
 		while (uart_read((Uart*)p_usart, data));
 	}
 # endif
 # ifdef UART1
 	if (UART1 == (Uart*)p_usart) {
-  403352:	4b2a      	ldr	r3, [pc, #168]	; (4033fc <usart_serial_getchar+0xbc>)
-  403354:	4298      	cmp	r0, r3
-  403356:	d018      	beq.n	40338a <usart_serial_getchar+0x4a>
+  40327e:	4b2a      	ldr	r3, [pc, #168]	; (403328 <usart_serial_getchar+0xbc>)
+  403280:	4298      	cmp	r0, r3
+  403282:	d018      	beq.n	4032b6 <usart_serial_getchar+0x4a>
 		while (uart_read((Uart*)p_usart, data));
 	}
 # endif
 # ifdef UART2
 	if (UART2 == (Uart*)p_usart) {
-  403358:	4b29      	ldr	r3, [pc, #164]	; (403400 <usart_serial_getchar+0xc0>)
-  40335a:	4298      	cmp	r0, r3
-  40335c:	d01d      	beq.n	40339a <usart_serial_getchar+0x5a>
+  403284:	4b29      	ldr	r3, [pc, #164]	; (40332c <usart_serial_getchar+0xc0>)
+  403286:	4298      	cmp	r0, r3
+  403288:	d01d      	beq.n	4032c6 <usart_serial_getchar+0x5a>
 		while (uart_read((Uart*)p_usart, data));
 	}
 # endif
 # ifdef UART3
 	if (UART3 == (Uart*)p_usart) {
-  40335e:	4b29      	ldr	r3, [pc, #164]	; (403404 <usart_serial_getchar+0xc4>)
-  403360:	429d      	cmp	r5, r3
-  403362:	d022      	beq.n	4033aa <usart_serial_getchar+0x6a>
+  40328a:	4b29      	ldr	r3, [pc, #164]	; (403330 <usart_serial_getchar+0xc4>)
+  40328c:	429d      	cmp	r5, r3
+  40328e:	d022      	beq.n	4032d6 <usart_serial_getchar+0x6a>
 		while (usart_read(p_usart, &val));
 		*data = (uint8_t)(val & 0xFF);
 	}
 #else
 # ifdef USART0
 	if (USART0 == p_usart) {
-  403364:	4b28      	ldr	r3, [pc, #160]	; (403408 <usart_serial_getchar+0xc8>)
-  403366:	429d      	cmp	r5, r3
-  403368:	d027      	beq.n	4033ba <usart_serial_getchar+0x7a>
+  403290:	4b28      	ldr	r3, [pc, #160]	; (403334 <usart_serial_getchar+0xc8>)
+  403292:	429d      	cmp	r5, r3
+  403294:	d027      	beq.n	4032e6 <usart_serial_getchar+0x7a>
 		while (usart_read(p_usart, &val));
 		*data = (uint8_t)(val & 0xFF);
 	}
 # endif
 # ifdef USART1
 	if (USART1 == p_usart) {
-  40336a:	4b28      	ldr	r3, [pc, #160]	; (40340c <usart_serial_getchar+0xcc>)
-  40336c:	429d      	cmp	r5, r3
-  40336e:	d02e      	beq.n	4033ce <usart_serial_getchar+0x8e>
+  403296:	4b28      	ldr	r3, [pc, #160]	; (403338 <usart_serial_getchar+0xcc>)
+  403298:	429d      	cmp	r5, r3
+  40329a:	d02e      	beq.n	4032fa <usart_serial_getchar+0x8e>
 		while (usart_read(p_usart, &val));
 		*data = (uint8_t)(val & 0xFF);
 	}
 # endif
 # ifdef USART2
 	if (USART2 == p_usart) {
-  403370:	4b27      	ldr	r3, [pc, #156]	; (403410 <usart_serial_getchar+0xd0>)
-  403372:	429d      	cmp	r5, r3
-  403374:	d035      	beq.n	4033e2 <usart_serial_getchar+0xa2>
+  40329c:	4b27      	ldr	r3, [pc, #156]	; (40333c <usart_serial_getchar+0xd0>)
+  40329e:	429d      	cmp	r5, r3
+  4032a0:	d035      	beq.n	40330e <usart_serial_getchar+0xa2>
 		*data = (uint8_t)(val & 0xFF);
 	}
 # endif
 #endif /* ifdef USART */
 
 }
-  403376:	b003      	add	sp, #12
-  403378:	bdf0      	pop	{r4, r5, r6, r7, pc}
+  4032a2:	b003      	add	sp, #12
+  4032a4:	bdf0      	pop	{r4, r5, r6, r7, pc}
 		while (uart_read((Uart*)p_usart, data));
-  40337a:	461f      	mov	r7, r3
-  40337c:	4e25      	ldr	r6, [pc, #148]	; (403414 <usart_serial_getchar+0xd4>)
-  40337e:	4621      	mov	r1, r4
-  403380:	4638      	mov	r0, r7
-  403382:	47b0      	blx	r6
-  403384:	2800      	cmp	r0, #0
-  403386:	d1fa      	bne.n	40337e <usart_serial_getchar+0x3e>
-  403388:	e7e9      	b.n	40335e <usart_serial_getchar+0x1e>
+  4032a6:	461f      	mov	r7, r3
+  4032a8:	4e25      	ldr	r6, [pc, #148]	; (403340 <usart_serial_getchar+0xd4>)
+  4032aa:	4621      	mov	r1, r4
+  4032ac:	4638      	mov	r0, r7
+  4032ae:	47b0      	blx	r6
+  4032b0:	2800      	cmp	r0, #0
+  4032b2:	d1fa      	bne.n	4032aa <usart_serial_getchar+0x3e>
+  4032b4:	e7e9      	b.n	40328a <usart_serial_getchar+0x1e>
 		while (uart_read((Uart*)p_usart, data));
-  40338a:	461f      	mov	r7, r3
-  40338c:	4e21      	ldr	r6, [pc, #132]	; (403414 <usart_serial_getchar+0xd4>)
-  40338e:	4621      	mov	r1, r4
-  403390:	4638      	mov	r0, r7
-  403392:	47b0      	blx	r6
-  403394:	2800      	cmp	r0, #0
-  403396:	d1fa      	bne.n	40338e <usart_serial_getchar+0x4e>
-  403398:	e7e4      	b.n	403364 <usart_serial_getchar+0x24>
+  4032b6:	461f      	mov	r7, r3
+  4032b8:	4e21      	ldr	r6, [pc, #132]	; (403340 <usart_serial_getchar+0xd4>)
+  4032ba:	4621      	mov	r1, r4
+  4032bc:	4638      	mov	r0, r7
+  4032be:	47b0      	blx	r6
+  4032c0:	2800      	cmp	r0, #0
+  4032c2:	d1fa      	bne.n	4032ba <usart_serial_getchar+0x4e>
+  4032c4:	e7e4      	b.n	403290 <usart_serial_getchar+0x24>
 		while (uart_read((Uart*)p_usart, data));
-  40339a:	461f      	mov	r7, r3
-  40339c:	4e1d      	ldr	r6, [pc, #116]	; (403414 <usart_serial_getchar+0xd4>)
-  40339e:	4621      	mov	r1, r4
-  4033a0:	4638      	mov	r0, r7
-  4033a2:	47b0      	blx	r6
-  4033a4:	2800      	cmp	r0, #0
-  4033a6:	d1fa      	bne.n	40339e <usart_serial_getchar+0x5e>
-  4033a8:	e7df      	b.n	40336a <usart_serial_getchar+0x2a>
+  4032c6:	461f      	mov	r7, r3
+  4032c8:	4e1d      	ldr	r6, [pc, #116]	; (403340 <usart_serial_getchar+0xd4>)
+  4032ca:	4621      	mov	r1, r4
+  4032cc:	4638      	mov	r0, r7
+  4032ce:	47b0      	blx	r6
+  4032d0:	2800      	cmp	r0, #0
+  4032d2:	d1fa      	bne.n	4032ca <usart_serial_getchar+0x5e>
+  4032d4:	e7df      	b.n	403296 <usart_serial_getchar+0x2a>
 		while (uart_read((Uart*)p_usart, data));
-  4033aa:	461f      	mov	r7, r3
-  4033ac:	4e19      	ldr	r6, [pc, #100]	; (403414 <usart_serial_getchar+0xd4>)
-  4033ae:	4621      	mov	r1, r4
-  4033b0:	4638      	mov	r0, r7
-  4033b2:	47b0      	blx	r6
-  4033b4:	2800      	cmp	r0, #0
-  4033b6:	d1fa      	bne.n	4033ae <usart_serial_getchar+0x6e>
-  4033b8:	e7da      	b.n	403370 <usart_serial_getchar+0x30>
+  4032d6:	461f      	mov	r7, r3
+  4032d8:	4e19      	ldr	r6, [pc, #100]	; (403340 <usart_serial_getchar+0xd4>)
+  4032da:	4621      	mov	r1, r4
+  4032dc:	4638      	mov	r0, r7
+  4032de:	47b0      	blx	r6
+  4032e0:	2800      	cmp	r0, #0
+  4032e2:	d1fa      	bne.n	4032da <usart_serial_getchar+0x6e>
+  4032e4:	e7da      	b.n	40329c <usart_serial_getchar+0x30>
 		while (usart_read(p_usart, &val));
-  4033ba:	461e      	mov	r6, r3
-  4033bc:	4d16      	ldr	r5, [pc, #88]	; (403418 <usart_serial_getchar+0xd8>)
-  4033be:	a901      	add	r1, sp, #4
-  4033c0:	4630      	mov	r0, r6
-  4033c2:	47a8      	blx	r5
-  4033c4:	2800      	cmp	r0, #0
-  4033c6:	d1fa      	bne.n	4033be <usart_serial_getchar+0x7e>
+  4032e6:	461e      	mov	r6, r3
+  4032e8:	4d16      	ldr	r5, [pc, #88]	; (403344 <usart_serial_getchar+0xd8>)
+  4032ea:	a901      	add	r1, sp, #4
+  4032ec:	4630      	mov	r0, r6
+  4032ee:	47a8      	blx	r5
+  4032f0:	2800      	cmp	r0, #0
+  4032f2:	d1fa      	bne.n	4032ea <usart_serial_getchar+0x7e>
 		*data = (uint8_t)(val & 0xFF);
-  4033c8:	9b01      	ldr	r3, [sp, #4]
-  4033ca:	7023      	strb	r3, [r4, #0]
-  4033cc:	e7d3      	b.n	403376 <usart_serial_getchar+0x36>
+  4032f4:	9b01      	ldr	r3, [sp, #4]
+  4032f6:	7023      	strb	r3, [r4, #0]
+  4032f8:	e7d3      	b.n	4032a2 <usart_serial_getchar+0x36>
 		while (usart_read(p_usart, &val));
-  4033ce:	461e      	mov	r6, r3
-  4033d0:	4d11      	ldr	r5, [pc, #68]	; (403418 <usart_serial_getchar+0xd8>)
-  4033d2:	a901      	add	r1, sp, #4
-  4033d4:	4630      	mov	r0, r6
-  4033d6:	47a8      	blx	r5
-  4033d8:	2800      	cmp	r0, #0
-  4033da:	d1fa      	bne.n	4033d2 <usart_serial_getchar+0x92>
+  4032fa:	461e      	mov	r6, r3
+  4032fc:	4d11      	ldr	r5, [pc, #68]	; (403344 <usart_serial_getchar+0xd8>)
+  4032fe:	a901      	add	r1, sp, #4
+  403300:	4630      	mov	r0, r6
+  403302:	47a8      	blx	r5
+  403304:	2800      	cmp	r0, #0
+  403306:	d1fa      	bne.n	4032fe <usart_serial_getchar+0x92>
 		*data = (uint8_t)(val & 0xFF);
-  4033dc:	9b01      	ldr	r3, [sp, #4]
-  4033de:	7023      	strb	r3, [r4, #0]
-  4033e0:	e7c9      	b.n	403376 <usart_serial_getchar+0x36>
+  403308:	9b01      	ldr	r3, [sp, #4]
+  40330a:	7023      	strb	r3, [r4, #0]
+  40330c:	e7c9      	b.n	4032a2 <usart_serial_getchar+0x36>
 		while (usart_read(p_usart, &val));
-  4033e2:	461e      	mov	r6, r3
-  4033e4:	4d0c      	ldr	r5, [pc, #48]	; (403418 <usart_serial_getchar+0xd8>)
-  4033e6:	a901      	add	r1, sp, #4
-  4033e8:	4630      	mov	r0, r6
-  4033ea:	47a8      	blx	r5
-  4033ec:	2800      	cmp	r0, #0
-  4033ee:	d1fa      	bne.n	4033e6 <usart_serial_getchar+0xa6>
+  40330e:	461e      	mov	r6, r3
+  403310:	4d0c      	ldr	r5, [pc, #48]	; (403344 <usart_serial_getchar+0xd8>)
+  403312:	a901      	add	r1, sp, #4
+  403314:	4630      	mov	r0, r6
+  403316:	47a8      	blx	r5
+  403318:	2800      	cmp	r0, #0
+  40331a:	d1fa      	bne.n	403312 <usart_serial_getchar+0xa6>
 		*data = (uint8_t)(val & 0xFF);
-  4033f0:	9b01      	ldr	r3, [sp, #4]
-  4033f2:	7023      	strb	r3, [r4, #0]
+  40331c:	9b01      	ldr	r3, [sp, #4]
+  40331e:	7023      	strb	r3, [r4, #0]
 }
-  4033f4:	e7bf      	b.n	403376 <usart_serial_getchar+0x36>
-  4033f6:	bf00      	nop
+  403320:	e7bf      	b.n	4032a2 <usart_serial_getchar+0x36>
+  403322:	bf00      	nop
+  403324:	400e0800 	.word	0x400e0800
+  403328:	400e0a00 	.word	0x400e0a00
+  40332c:	400e1a00 	.word	0x400e1a00
+  403330:	400e1c00 	.word	0x400e1c00
+  403334:	40024000 	.word	0x40024000
+  403338:	40028000 	.word	0x40028000
+  40333c:	4002c000 	.word	0x4002c000
+  403340:	00400b73 	.word	0x00400b73
+  403344:	00400c87 	.word	0x00400c87
+
+00403348 <usart_serial_putchar>:
+{
+  403348:	b570      	push	{r4, r5, r6, lr}
+  40334a:	460c      	mov	r4, r1
+	if (UART0 == (Uart*)p_usart) {
+  40334c:	4b2a      	ldr	r3, [pc, #168]	; (4033f8 <usart_serial_putchar+0xb0>)
+  40334e:	4298      	cmp	r0, r3
+  403350:	d013      	beq.n	40337a <usart_serial_putchar+0x32>
+	if (UART1 == (Uart*)p_usart) {
+  403352:	4b2a      	ldr	r3, [pc, #168]	; (4033fc <usart_serial_putchar+0xb4>)
+  403354:	4298      	cmp	r0, r3
+  403356:	d019      	beq.n	40338c <usart_serial_putchar+0x44>
+	if (UART2 == (Uart*)p_usart) {
+  403358:	4b29      	ldr	r3, [pc, #164]	; (403400 <usart_serial_putchar+0xb8>)
+  40335a:	4298      	cmp	r0, r3
+  40335c:	d01f      	beq.n	40339e <usart_serial_putchar+0x56>
+	if (UART3 == (Uart*)p_usart) {
+  40335e:	4b29      	ldr	r3, [pc, #164]	; (403404 <usart_serial_putchar+0xbc>)
+  403360:	4298      	cmp	r0, r3
+  403362:	d025      	beq.n	4033b0 <usart_serial_putchar+0x68>
+	if (USART0 == p_usart) {
+  403364:	4b28      	ldr	r3, [pc, #160]	; (403408 <usart_serial_putchar+0xc0>)
+  403366:	4298      	cmp	r0, r3
+  403368:	d02b      	beq.n	4033c2 <usart_serial_putchar+0x7a>
+	if (USART1 == p_usart) {
+  40336a:	4b28      	ldr	r3, [pc, #160]	; (40340c <usart_serial_putchar+0xc4>)
+  40336c:	4298      	cmp	r0, r3
+  40336e:	d031      	beq.n	4033d4 <usart_serial_putchar+0x8c>
+	if (USART2 == p_usart) {
+  403370:	4b27      	ldr	r3, [pc, #156]	; (403410 <usart_serial_putchar+0xc8>)
+  403372:	4298      	cmp	r0, r3
+  403374:	d037      	beq.n	4033e6 <usart_serial_putchar+0x9e>
+	return 0;
+  403376:	2000      	movs	r0, #0
+}
+  403378:	bd70      	pop	{r4, r5, r6, pc}
+		while (uart_write((Uart*)p_usart, c)!=0);
+  40337a:	461e      	mov	r6, r3
+  40337c:	4d25      	ldr	r5, [pc, #148]	; (403414 <usart_serial_putchar+0xcc>)
+  40337e:	4621      	mov	r1, r4
+  403380:	4630      	mov	r0, r6
+  403382:	47a8      	blx	r5
+  403384:	2800      	cmp	r0, #0
+  403386:	d1fa      	bne.n	40337e <usart_serial_putchar+0x36>
+		return 1;
+  403388:	2001      	movs	r0, #1
+  40338a:	bd70      	pop	{r4, r5, r6, pc}
+		while (uart_write((Uart*)p_usart, c)!=0);
+  40338c:	461e      	mov	r6, r3
+  40338e:	4d21      	ldr	r5, [pc, #132]	; (403414 <usart_serial_putchar+0xcc>)
+  403390:	4621      	mov	r1, r4
+  403392:	4630      	mov	r0, r6
+  403394:	47a8      	blx	r5
+  403396:	2800      	cmp	r0, #0
+  403398:	d1fa      	bne.n	403390 <usart_serial_putchar+0x48>
+		return 1;
+  40339a:	2001      	movs	r0, #1
+  40339c:	bd70      	pop	{r4, r5, r6, pc}
+		while (uart_write((Uart*)p_usart, c)!=0);
+  40339e:	461e      	mov	r6, r3
+  4033a0:	4d1c      	ldr	r5, [pc, #112]	; (403414 <usart_serial_putchar+0xcc>)
+  4033a2:	4621      	mov	r1, r4
+  4033a4:	4630      	mov	r0, r6
+  4033a6:	47a8      	blx	r5
+  4033a8:	2800      	cmp	r0, #0
+  4033aa:	d1fa      	bne.n	4033a2 <usart_serial_putchar+0x5a>
+		return 1;
+  4033ac:	2001      	movs	r0, #1
+  4033ae:	bd70      	pop	{r4, r5, r6, pc}
+		while (uart_write((Uart*)p_usart, c)!=0);
+  4033b0:	461e      	mov	r6, r3
+  4033b2:	4d18      	ldr	r5, [pc, #96]	; (403414 <usart_serial_putchar+0xcc>)
+  4033b4:	4621      	mov	r1, r4
+  4033b6:	4630      	mov	r0, r6
+  4033b8:	47a8      	blx	r5
+  4033ba:	2800      	cmp	r0, #0
+  4033bc:	d1fa      	bne.n	4033b4 <usart_serial_putchar+0x6c>
+		return 1;
+  4033be:	2001      	movs	r0, #1
+  4033c0:	bd70      	pop	{r4, r5, r6, pc}
+		while (usart_write(p_usart, c)!=0);
+  4033c2:	461e      	mov	r6, r3
+  4033c4:	4d14      	ldr	r5, [pc, #80]	; (403418 <usart_serial_putchar+0xd0>)
+  4033c6:	4621      	mov	r1, r4
+  4033c8:	4630      	mov	r0, r6
+  4033ca:	47a8      	blx	r5
+  4033cc:	2800      	cmp	r0, #0
+  4033ce:	d1fa      	bne.n	4033c6 <usart_serial_putchar+0x7e>
+		return 1;
+  4033d0:	2001      	movs	r0, #1
+  4033d2:	bd70      	pop	{r4, r5, r6, pc}
+		while (usart_write(p_usart, c)!=0);
+  4033d4:	461e      	mov	r6, r3
+  4033d6:	4d10      	ldr	r5, [pc, #64]	; (403418 <usart_serial_putchar+0xd0>)
+  4033d8:	4621      	mov	r1, r4
+  4033da:	4630      	mov	r0, r6
+  4033dc:	47a8      	blx	r5
+  4033de:	2800      	cmp	r0, #0
+  4033e0:	d1fa      	bne.n	4033d8 <usart_serial_putchar+0x90>
+		return 1;
+  4033e2:	2001      	movs	r0, #1
+  4033e4:	bd70      	pop	{r4, r5, r6, pc}
+		while (usart_write(p_usart, c)!=0);
+  4033e6:	461e      	mov	r6, r3
+  4033e8:	4d0b      	ldr	r5, [pc, #44]	; (403418 <usart_serial_putchar+0xd0>)
+  4033ea:	4621      	mov	r1, r4
+  4033ec:	4630      	mov	r0, r6
+  4033ee:	47a8      	blx	r5
+  4033f0:	2800      	cmp	r0, #0
+  4033f2:	d1fa      	bne.n	4033ea <usart_serial_putchar+0xa2>
+		return 1;
+  4033f4:	2001      	movs	r0, #1
+  4033f6:	bd70      	pop	{r4, r5, r6, pc}
   4033f8:	400e0800 	.word	0x400e0800
   4033fc:	400e0a00 	.word	0x400e0a00
   403400:	400e1a00 	.word	0x400e1a00
@@ -7865,14 +7820,14 @@ static inline void usart_serial_getchar(usart_if p_usart, uint8_t *data)
   403408:	40024000 	.word	0x40024000
   40340c:	40028000 	.word	0x40028000
   403410:	4002c000 	.word	0x4002c000
-  403414:	00400b73 	.word	0x00400b73
-  403418:	00400c87 	.word	0x00400c87
+  403414:	00400b61 	.word	0x00400b61
+  403418:	00400c71 	.word	0x00400c71
 
 0040341c <task_execute>:
-			}
-		}
 	}
 }
+
+
 
 static void task_execute(void *pvParameters) {
   40341c:	b500      	push	{lr}
@@ -7953,7 +7908,7 @@ static void task_execute(void *pvParameters) {
   40348a:	47a0      	blx	r4
   40348c:	e04a      	b.n	403524 <task_execute+0x108>
 			}
-						
+			
 			
 			if (strcmp(msgBuffer, "led 1 on") == 0) {
 				on1 = 1;
@@ -7999,7 +7954,7 @@ static void task_execute(void *pvParameters) {
   4034cc:	47a0      	blx	r4
   4034ce:	e038      	b.n	403542 <task_execute+0x126>
 			}
-						
+			
 			if (strcmp(msgBuffer, "led 1 off") == 0) {
 				on1 = 0;
   4034d0:	2200      	movs	r2, #0
@@ -8108,13 +8063,13 @@ static void task_execute(void *pvParameters) {
   40357c:	e7b7      	b.n	4034ee <task_execute+0xd2>
   40357e:	bf00      	nop
   403580:	00401621 	.word	0x00401621
-  403584:	20400d40 	.word	0x20400d40
+  403584:	20400d44 	.word	0x20400d44
   403588:	004046e9 	.word	0x004046e9
-  40358c:	20400d48 	.word	0x20400d48
+  40358c:	20400d4c 	.word	0x20400d4c
   403590:	0040167d 	.word	0x0040167d
   403594:	20400d30 	.word	0x20400d30
   403598:	20400d24 	.word	0x20400d24
-  40359c:	20400d38 	.word	0x20400d38
+  40359c:	20400d3c 	.word	0x20400d3c
   4035a0:	20400d34 	.word	0x20400d34
   4035a4:	20400d2c 	.word	0x20400d2c
   4035a8:	0040a70c 	.word	0x0040a70c
@@ -8194,10 +8149,10 @@ static void task_uartRX(void *pvParameters) {
   403646:	e7e8      	b.n	40361a <task_uartRX+0x42>
   403648:	00404409 	.word	0x00404409
   40364c:	00401621 	.word	0x00401621
-  403650:	20400d44 	.word	0x20400d44
+  403650:	20400d48 	.word	0x20400d48
   403654:	00401a65 	.word	0x00401a65
   403658:	0040a744 	.word	0x0040a744
-  40365c:	20400d40 	.word	0x20400d40
+  40365c:	20400d44 	.word	0x20400d44
   403660:	00403d2d 	.word	0x00403d2d
   403664:	0040167d 	.word	0x0040167d
 
@@ -8213,39 +8168,39 @@ static void task_led(void *pvParameters) {
   403674:	4798      	blx	r3
   403676:	4d20      	ldr	r5, [pc, #128]	; (4036f8 <task_led+0x90>)
   403678:	6028      	str	r0, [r5, #0]
-  pmc_enable_periph_clk(BUT1_PIO_ID);
-  40367a:	2010      	movs	r0, #16
+  pmc_enable_periph_clk(BUT_PIO_ID);
+  40367a:	200a      	movs	r0, #10
   40367c:	4b1f      	ldr	r3, [pc, #124]	; (4036fc <task_led+0x94>)
   40367e:	4798      	blx	r3
-  pio_configure(BUT1_PIO, PIO_INPUT, BUT1_PIO_IDX_MASK, PIO_PULLUP);
+  pio_configure(BUT_PIO, PIO_INPUT, BUT_PIO_IDX_MASK, PIO_PULLUP);
   403680:	4c1f      	ldr	r4, [pc, #124]	; (403700 <task_led+0x98>)
   403682:	2301      	movs	r3, #1
-  403684:	f04f 5280 	mov.w	r2, #268435456	; 0x10000000
+  403684:	f44f 6200 	mov.w	r2, #2048	; 0x800
   403688:	f04f 5120 	mov.w	r1, #671088640	; 0x28000000
   40368c:	4620      	mov	r0, r4
   40368e:	4e1d      	ldr	r6, [pc, #116]	; (403704 <task_led+0x9c>)
   403690:	47b0      	blx	r6
-  pio_handler_set(BUT1_PIO, BUT1_PIO_ID, BUT1_PIO_IDX_MASK, PIO_IT_FALL_EDGE, but1_callback);
+  pio_handler_set(BUT_PIO, BUT_PIO_ID, BUT_PIO_IDX_MASK, PIO_IT_FALL_EDGE, but_callback);
   403692:	4b1d      	ldr	r3, [pc, #116]	; (403708 <task_led+0xa0>)
   403694:	9300      	str	r3, [sp, #0]
   403696:	2350      	movs	r3, #80	; 0x50
-  403698:	f04f 5280 	mov.w	r2, #268435456	; 0x10000000
-  40369c:	2110      	movs	r1, #16
+  403698:	f44f 6200 	mov.w	r2, #2048	; 0x800
+  40369c:	210a      	movs	r1, #10
   40369e:	4620      	mov	r0, r4
   4036a0:	4e1a      	ldr	r6, [pc, #104]	; (40370c <task_led+0xa4>)
   4036a2:	47b0      	blx	r6
-  pio_enable_interrupt(BUT1_PIO, BUT1_PIO_IDX_MASK);
-  4036a4:	f04f 5180 	mov.w	r1, #268435456	; 0x10000000
+  pio_enable_interrupt(BUT_PIO, BUT_PIO_IDX_MASK);
+  4036a4:	f44f 6100 	mov.w	r1, #2048	; 0x800
   4036a8:	4620      	mov	r0, r4
   4036aa:	4b19      	ldr	r3, [pc, #100]	; (403710 <task_led+0xa8>)
   4036ac:	4798      	blx	r3
     NVIC->ISER[(((uint32_t)IRQn) >> 5UL)] = (uint32_t)(1UL << (((uint32_t)IRQn) & 0x1FUL));
   4036ae:	4b19      	ldr	r3, [pc, #100]	; (403714 <task_led+0xac>)
-  4036b0:	f44f 3280 	mov.w	r2, #65536	; 0x10000
+  4036b0:	f44f 6280 	mov.w	r2, #1024	; 0x400
   4036b4:	601a      	str	r2, [r3, #0]
     NVIC->IP[((uint32_t)IRQn)]                = (uint8_t)((priority << (8U - __NVIC_PRIO_BITS)) & (uint32_t)0xFFUL);
   4036b6:	2280      	movs	r2, #128	; 0x80
-  4036b8:	f883 2310 	strb.w	r2, [r3, #784]	; 0x310
+  4036b8:	f883 230a 	strb.w	r2, [r3, #778]	; 0x30a
   if (xSemaphore == NULL)
   4036bc:	682b      	ldr	r3, [r5, #0]
   4036be:	b913      	cbnz	r3, 4036c6 <task_led+0x5e>
@@ -8280,7 +8235,7 @@ static void task_led(void *pvParameters) {
   4036f4:	00401621 	.word	0x00401621
   4036f8:	20400d28 	.word	0x20400d28
   4036fc:	0040087d 	.word	0x0040087d
-  403700:	400e1400 	.word	0x400e1400
+  403700:	400e0e00 	.word	0x400e0e00
   403704:	0040055d 	.word	0x0040055d
   403708:	00403235 	.word	0x00403235
   40370c:	00400689 	.word	0x00400689
@@ -8292,18 +8247,8 @@ static void task_led(void *pvParameters) {
   403724:	400e1200 	.word	0x400e1200
 
 00403728 <task_monitor>:
-}
-/**
- * \brief This task, when activated, send every ten seconds on debug UART
- * the whole report of free heap and total tasks status
- */
 static void task_monitor(void *pvParameters){
   403728:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
-
-	/* Block for 3000ms. */
-	const TickType_t xDelay = 3000 / portTICK_PERIOD_MS;
-
-	while(1){
 		printf("--- task ## %u\n", (unsigned int)uxTaskGetNumberOfTasks());
   40372a:	4f09      	ldr	r7, [pc, #36]	; (403750 <task_monitor+0x28>)
   40372c:	4e09      	ldr	r6, [pc, #36]	; (403754 <task_monitor+0x2c>)
@@ -8397,11 +8342,6 @@ void pin_toggle(Pio *pio, uint32_t mask) {
   4037d0:	00400469 	.word	0x00400469
 
 004037d4 <task_led3>:
-				pio_set(LED2_PIO, LED2_IDX_MASK);
-			}
-		}
-	}
-}
 static void task_led3(void *pvParameters){
   4037d4:	b500      	push	{lr}
   4037d6:	b083      	sub	sp, #12
@@ -8422,8 +8362,6 @@ static void task_led3(void *pvParameters){
   4037f0:	4620      	mov	r0, r4
   4037f2:	4b1d      	ldr	r3, [pc, #116]	; (403868 <task_led3+0x94>)
   4037f4:	4798      	blx	r3
-
-	/* Block for 2000ms. */
 	xQueueLED3 = xQueueCreate(5, sizeof(int));
   4037f6:	2200      	movs	r2, #0
   4037f8:	2104      	movs	r1, #4
@@ -8439,18 +8377,10 @@ static void task_led3(void *pvParameters){
   40380a:	47a0      	blx	r4
   40380c:	4b19      	ldr	r3, [pc, #100]	; (403874 <task_led3+0xa0>)
   40380e:	6018      	str	r0, [r3, #0]
-	int i, on;
-
-	while(1){
 		if (xQueueReceive(xQueueLED3, &(i), (TickType_t)500)) {
   403810:	4e17      	ldr	r6, [pc, #92]	; (403870 <task_led3+0x9c>)
   403812:	4d19      	ldr	r5, [pc, #100]	; (403878 <task_led3+0xa4>)
   403814:	e019      	b.n	40384a <task_led3+0x76>
-			if (i) {
-				pin_toggle(LED3_PIO, LED3_IDX_MASK);
-			}
-		}
-		
 		if (xQueueReceive(xQueueLED3on, &(on), (TickType_t)500)) {
   403816:	4622      	mov	r2, r4
   403818:	4669      	mov	r1, sp
@@ -8486,7 +8416,6 @@ static void task_led3(void *pvParameters){
 		if (xQueueReceive(xQueueLED3, &(i), (TickType_t)500)) {
   40384a:	f44f 74fa 	mov.w	r4, #500	; 0x1f4
   40384e:	e7e8      	b.n	403822 <task_led3+0x4e>
-				} else {
 				pio_set(LED3_PIO, LED3_IDX_MASK);
   403850:	2104      	movs	r1, #4
   403852:	4803      	ldr	r0, [pc, #12]	; (403860 <task_led3+0x8c>)
@@ -8686,18 +8615,13 @@ static void task_led1(void *pvParameters){
   4039d0:	0040055d 	.word	0x0040055d
   4039d4:	00400465 	.word	0x00400465
   4039d8:	00401621 	.word	0x00401621
-  4039dc:	20400d48 	.word	0x20400d48
-  4039e0:	20400d38 	.word	0x20400d38
+  4039dc:	20400d4c 	.word	0x20400d4c
+  4039e0:	20400d3c 	.word	0x20400d3c
   4039e4:	00401a65 	.word	0x00401a65
   4039e8:	004037a9 	.word	0x004037a9
   4039ec:	00400469 	.word	0x00400469
 
 004039f0 <USART1_Handler>:
-	usart_enable_interrupt(USART1, US_IER_RXRDY);
-	NVIC_SetPriority(ID_USART1, 4);
-	NVIC_EnableIRQ(ID_USART1);
-}
-
 void USART1_Handler(void){
   4039f0:	b570      	push	{r4, r5, r6, lr}
   4039f2:	b084      	sub	sp, #16
@@ -8705,23 +8629,12 @@ void USART1_Handler(void){
   4039f4:	4810      	ldr	r0, [pc, #64]	; (403a38 <USART1_Handler+0x48>)
   4039f6:	4b11      	ldr	r3, [pc, #68]	; (403a3c <USART1_Handler+0x4c>)
   4039f8:	4798      	blx	r3
-
 	BaseType_t xHigherPriorityTaskWoken = pdTRUE;
   4039fa:	2301      	movs	r3, #1
   4039fc:	9303      	str	r3, [sp, #12]
-
-	// Verifica por qual motivo entrou na interrupçcao?
-	// RXRDY ou TXRDY
-
-	//  Dados disponível para leitura
 	if (ret & US_IER_RXRDY)
   4039fe:	f010 0f01 	tst.w	r0, #1
   403a02:	d101      	bne.n	403a08 <USART1_Handler+0x18>
-		// printf("%c", c);
-	}
-	else if (ret & US_IER_TXRDY)
-	{
-	}
 }
   403a04:	b004      	add	sp, #16
   403a06:	bd70      	pop	{r4, r5, r6, pc}
@@ -8754,7 +8667,7 @@ void USART1_Handler(void){
   403a38:	40028000 	.word	0x40028000
   403a3c:	00400c6d 	.word	0x00400c6d
   403a40:	00400c87 	.word	0x00400c87
-  403a44:	20400d44 	.word	0x20400d44
+  403a44:	20400d48 	.word	0x20400d48
   403a48:	0040186d 	.word	0x0040186d
 
 00403a4c <main>:
@@ -9061,10 +8974,10 @@ static inline void stdio_serial_init(volatile void *usart, const usart_serial_op
   403c24:	40088000 	.word	0x40088000
   403c28:	20400cdc 	.word	0x20400cdc
   403c2c:	40028000 	.word	0x40028000
-  403c30:	0040326d 	.word	0x0040326d
+  403c30:	00403349 	.word	0x00403349
   403c34:	20400cd8 	.word	0x20400cd8
   403c38:	20400cd4 	.word	0x20400cd4
-  403c3c:	00403341 	.word	0x00403341
+  403c3c:	0040326d 	.word	0x0040326d
   403c40:	08f0d180 	.word	0x08f0d180
   403c44:	00400c09 	.word	0x00400c09
   403c48:	00400c69 	.word	0x00400c69
@@ -9851,13 +9764,13 @@ static inline void stdio_serial_init(volatile void *usart, const usart_serial_op
   4044a4:	4801      	ldr	r0, [pc, #4]	; (4044ac <__malloc_lock+0x8>)
   4044a6:	f004 b94b 	b.w	408740 <__retarget_lock_acquire_recursive>
   4044aa:	bf00      	nop
-  4044ac:	20400d5c 	.word	0x20400d5c
+  4044ac:	20400d60 	.word	0x20400d60
 
 004044b0 <__malloc_unlock>:
   4044b0:	4801      	ldr	r0, [pc, #4]	; (4044b8 <__malloc_unlock+0x8>)
   4044b2:	f004 b947 	b.w	408744 <__retarget_lock_release_recursive>
   4044b6:	bf00      	nop
-  4044b8:	20400d5c 	.word	0x20400d5c
+  4044b8:	20400d60 	.word	0x20400d60
 
 004044bc <_sbrk_r>:
   4044bc:	b538      	push	{r3, r4, r5, lr}
@@ -9875,7 +9788,7 @@ static inline void stdio_serial_init(volatile void *usart, const usart_serial_op
   4044d6:	d0fb      	beq.n	4044d0 <_sbrk_r+0x14>
   4044d8:	602b      	str	r3, [r5, #0]
   4044da:	bd38      	pop	{r3, r4, r5, pc}
-  4044dc:	20400d70 	.word	0x20400d70
+  4044dc:	20400d74 	.word	0x20400d74
 
 004044e0 <setbuf>:
   4044e0:	2900      	cmp	r1, #0
@@ -15634,20 +15547,20 @@ static inline void stdio_serial_init(volatile void *usart, const usart_serial_op
   407fea:	e8bd 4010 	ldmia.w	sp!, {r4, lr}
   407fee:	f000 bba9 	b.w	408744 <__retarget_lock_release_recursive>
   407ff2:	bf00      	nop
-  407ff4:	20400d58 	.word	0x20400d58
+  407ff4:	20400d5c 	.word	0x20400d5c
   407ff8:	00407f49 	.word	0x00407f49
 
 00407ffc <__sfp_lock_acquire>:
   407ffc:	4801      	ldr	r0, [pc, #4]	; (408004 <__sfp_lock_acquire+0x8>)
   407ffe:	f000 bb9f 	b.w	408740 <__retarget_lock_acquire_recursive>
   408002:	bf00      	nop
-  408004:	20400d6c 	.word	0x20400d6c
+  408004:	20400d70 	.word	0x20400d70
 
 00408008 <__sfp_lock_release>:
   408008:	4801      	ldr	r0, [pc, #4]	; (408010 <__sfp_lock_release+0x8>)
   40800a:	f000 bb9b 	b.w	408744 <__retarget_lock_release_recursive>
   40800e:	bf00      	nop
-  408010:	20400d6c 	.word	0x20400d6c
+  408010:	20400d70 	.word	0x20400d70
 
 00408014 <__libc_fini_array>:
   408014:	b538      	push	{r3, r4, r5, lr}
@@ -17932,7 +17845,7 @@ static inline void stdio_serial_init(volatile void *usart, const usart_serial_op
   4095de:	6033      	str	r3, [r6, #0]
   4095e0:	bd70      	pop	{r4, r5, r6, pc}
   4095e2:	bf00      	nop
-  4095e4:	20400d70 	.word	0x20400d70
+  4095e4:	20400d74 	.word	0x20400d74
 
 004095e8 <__register_exitproc>:
   4095e8:	e92d 43f8 	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, lr}
@@ -18062,7 +17975,7 @@ static inline void stdio_serial_init(volatile void *usart, const usart_serial_op
   409726:	d0fb      	beq.n	409720 <_close_r+0x14>
   409728:	602b      	str	r3, [r5, #0]
   40972a:	bd38      	pop	{r3, r4, r5, pc}
-  40972c:	20400d70 	.word	0x20400d70
+  40972c:	20400d74 	.word	0x20400d74
 
 00409730 <_fclose_r>:
   409730:	b570      	push	{r4, r5, r6, lr}
@@ -18166,7 +18079,7 @@ static inline void stdio_serial_init(volatile void *usart, const usart_serial_op
   409812:	d0fb      	beq.n	40980c <_fstat_r+0x18>
   409814:	602b      	str	r3, [r5, #0]
   409816:	bd38      	pop	{r3, r4, r5, pc}
-  409818:	20400d70 	.word	0x20400d70
+  409818:	20400d74 	.word	0x20400d74
 
 0040981c <_isatty_r>:
   40981c:	b538      	push	{r3, r4, r5, lr}
@@ -18184,7 +18097,7 @@ static inline void stdio_serial_init(volatile void *usart, const usart_serial_op
   409836:	d0fb      	beq.n	409830 <_isatty_r+0x14>
   409838:	602b      	str	r3, [r5, #0]
   40983a:	bd38      	pop	{r3, r4, r5, pc}
-  40983c:	20400d70 	.word	0x20400d70
+  40983c:	20400d74 	.word	0x20400d74
 
 00409840 <_lseek_r>:
   409840:	b570      	push	{r4, r5, r6, lr}
@@ -18206,7 +18119,7 @@ static inline void stdio_serial_init(volatile void *usart, const usart_serial_op
   409862:	6033      	str	r3, [r6, #0]
   409864:	bd70      	pop	{r4, r5, r6, pc}
   409866:	bf00      	nop
-  409868:	20400d70 	.word	0x20400d70
+  409868:	20400d74 	.word	0x20400d74
 
 0040986c <_read_r>:
   40986c:	b570      	push	{r4, r5, r6, lr}
@@ -18228,7 +18141,7 @@ static inline void stdio_serial_init(volatile void *usart, const usart_serial_op
   40988e:	6033      	str	r3, [r6, #0]
   409890:	bd70      	pop	{r4, r5, r6, pc}
   409892:	bf00      	nop
-  409894:	20400d70 	.word	0x20400d70
+  409894:	20400d74 	.word	0x20400d74
 
 00409898 <__aeabi_drsub>:
   409898:	f081 4100 	eor.w	r1, r1, #2147483648	; 0x80000000
@@ -19319,11 +19232,11 @@ static inline void stdio_serial_init(volatile void *usart, const usart_serial_op
   40a534:	00444c50 	.word	0x00444c50
   40a538:	25202d2d 	.word	0x25202d2d
   40a53c:	000d0a73 	.word	0x000d0a73
-  40a540:	353a3232 	.word	0x353a3232
-  40a544:	31343a38 	.word	0x31343a38
+  40a540:	343a3131 	.word	0x343a3131
+  40a544:	31343a36 	.word	0x31343a36
   40a548:	00000000 	.word	0x00000000
   40a54c:	2079614d 	.word	0x2079614d
-  40a550:	32203520 	.word	0x32203520
+  40a550:	32203620 	.word	0x32203620
   40a554:	00303230 	.word	0x00303230
   40a558:	43202d2d 	.word	0x43202d2d
   40a55c:	69706d6f 	.word	0x69706d6f

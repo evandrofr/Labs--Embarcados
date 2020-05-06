@@ -19,23 +19,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   7 .comment      00000059  00000000  00000000  000609f6  2**0
                   CONTENTS, READONLY
-  8 .debug_info   0002ad4a  00000000  00000000  00060a4f  2**0
+  8 .debug_info   0002ad0f  00000000  00000000  00060a4f  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_abbrev 000059da  00000000  00000000  0008b799  2**0
+  9 .debug_abbrev 000059da  00000000  00000000  0008b75e  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    0000dde5  00000000  00000000  00091173  2**0
+ 10 .debug_loc    0000dde5  00000000  00000000  00091138  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_aranges 000012d8  00000000  00000000  0009ef58  2**0
+ 11 .debug_aranges 000012d8  00000000  00000000  0009ef1d  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00001588  00000000  00000000  000a0230  2**0
+ 12 .debug_ranges 00001588  00000000  00000000  000a01f5  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_macro  0000ee62  00000000  00000000  000a17b8  2**0
+ 13 .debug_macro  0000ee62  00000000  00000000  000a177d  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_line   00017225  00000000  00000000  000b061a  2**0
+ 14 .debug_line   00017225  00000000  00000000  000b05df  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_str    0009e8b6  00000000  00000000  000c783f  2**0
+ 15 .debug_str    0009e898  00000000  00000000  000c7804  2**0
                   CONTENTS, READONLY, DEBUGGING
- 16 .debug_frame  00003c70  00000000  00000000  001660f8  2**2
+ 16 .debug_frame  00003c70  00000000  00000000  0016609c  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -10282,10 +10282,10 @@ void task_lcd(void){
   404114:	4e11      	ldr	r6, [pc, #68]	; (40415c <task_lcd+0x120>)
   404116:	4d1c      	ldr	r5, [pc, #112]	; (404188 <task_lcd+0x14c>)
   404118:	e004      	b.n	404124 <task_lcd+0xe8>
-// 	  
-// 	  draw_button_new(but0);
-// 	  draw_button_new(but1);
-// 	  draw_button_new(but2);
+		  botoes[b].callback(&botoes[b]);
+	  }
+
+	  
 	  
  	  printf("x:%d y:%d\n", touch.x, touch.y);
   40411a:	9a05      	ldr	r2, [sp, #20]
@@ -32106,7 +32106,7 @@ void portable_delay_cycles(unsigned long n)
 20400010 <uxCriticalNesting>:
 20400010:	aaaa aaaa                                   ....
 
-20400014 <last_state.12133>:
+20400014 <last_state.12130>:
 20400014:	00ff 0000                                   ....
 
 20400018 <_impure_ptr>:

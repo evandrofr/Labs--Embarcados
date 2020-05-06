@@ -8,9 +8,6 @@
 #include "tfont.h"
 #include "digital521.h"
 
-
-
-
 /************************************************************************/
 /* LCD + TOUCH                                                          */
 /************************************************************************/
@@ -63,9 +60,6 @@ void but2_callback(t_but *but);
 
 void draw_button_new(t_but but);
 
-volatile char but0_flag = 0;
-volatile char but1_flag = 0;
-volatile char but2_flag = 0;
 
 /************************************************************************/
 /* handler/callbacks                                                    */
@@ -328,13 +322,6 @@ void task_lcd(void){
 		  botoes[b].callback(&botoes[b]);
 	  }
 	  
-// 	  but0.status = ! but0.status;
-// 	  but1.status = ! but1.status;
-// 	  but2.status = ! but2.status;
-// 	  
-// 	  draw_button_new(but0);
-// 	  draw_button_new(but1);
-// 	  draw_button_new(but2);
 	  
  	  printf("x:%d y:%d\n", touch.x, touch.y);
     }
@@ -374,23 +361,6 @@ int main(void){
   vTaskStartScheduler();
 
   while(1){
-// 	  if(but0_flag){
-//  		  but0.status = !but0.status;
-//  		  draw_button_new(but0);
-// 		   but0_flag = 0;
-// 	  }
-// 	  
-// 	  if(but1_flag){
-//  		  but1.status = !but1.status;
-//  		  draw_button_new(but1);
-// 		   but1_flag = 0;
-// 	  }
-// 	  
-// 	  if(but2_flag){
-//  		  but2.status = !but2.status;
-//  		  draw_button_new(but2);
-// 		   but2_flag = 0;
-// 	  }
 
   }
 
