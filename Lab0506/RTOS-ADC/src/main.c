@@ -25,7 +25,19 @@
 
 
 #define NUM_TAPS   12  // ordem do filtro (quantos coefientes)
+/*#define NUM_TAPS   8  // ordem do filtro (quantos coefientes)*/
 #define BLOCK_SIZE 1   // se será processado por blocos, no caso não.
+
+// const float32_t firCoeffs32[NUM_TAPS] = {
+// 	0.12269166637219883,
+// 	0.12466396327768503,
+// 	0.1259892807712678,
+// 	0.12665508957884833,
+// 	0.12665508957884833,
+// 	0.1259892807712678,
+// 	0.12466396327768503,
+// 0.12269166637219883};
+
 
 const float32_t firCoeffs32[NUM_TAPS] ={
 	0.07930125683894955,
@@ -321,7 +333,10 @@ void task_lcd(void){
   
   char buffer[64];
   int x = 0;
+  int radius = 50;
 
+	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_BLACK));
+	ili9488_draw_filled_circle(ILI9488_LCD_WIDTH/2, ILI9488_LCD_HEIGHT/2, 55 );
   while (true) {
     if (xQueueReceive( xQueueTouch, &(touch), ( TickType_t )  0 / portTICK_PERIOD_MS)) {
       //printf("Touch em: x:%d y:%d\n", touch.x, touch.y);
@@ -335,10 +350,16 @@ void task_lcd(void){
 		  x = 0;
 		  draw_screen();
 	  } 
-	  ili9488_set_foreground_color(COLOR_CONVERT(COLOR_BLACK));
-	  ili9488_draw_filled_circle(x, ILI9488_LCD_HEIGHT - plot.raw / 16, 2 );
 	  ili9488_set_foreground_color(COLOR_CONVERT(COLOR_RED));
-	  ili9488_draw_filled_circle(x, (ILI9488_LCD_HEIGHT - plot.filtrado / 16) , 2 );
+	  ili9488_draw_filled_circle(radius * cos(2*PI*plot.filtrado/4095) + ILI9488_LCD_WIDTH/2, radius * sin(2*PI*plot.filtrado/4095) + ILI9488_LCD_HEIGHT/2, 2 );
+	  
+		ili9488_set_foreground_color(COLOR_CONVERT(COLOR_BLACK));
+		ili9488_draw_filled_circle(ILI9488_LCD_WIDTH/2, ILI9488_LCD_HEIGHT/2, 55 );
+	  
+// 	  ili9488_set_foreground_color(COLOR_CONVERT(COLOR_BLACK));
+// 	  ili9488_draw_filled_circle(x, ILI9488_LCD_HEIGHT - plot.raw / 16, 2 );
+// 	  ili9488_set_foreground_color(COLOR_CONVERT(COLOR_RED));
+// 	  ili9488_draw_filled_circle(x, (ILI9488_LCD_HEIGHT - plot.filtrado / 16) , 2 );
 
 
     }
