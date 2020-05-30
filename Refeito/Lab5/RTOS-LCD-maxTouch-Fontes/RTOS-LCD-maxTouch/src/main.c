@@ -60,6 +60,14 @@ typedef struct {
 
 QueueHandle_t xQueueTouch;
 
+typedef struct {
+	  uint value;
+} adcData;
+
+QueueHandle_t xQueueADC;
+
+SemaphoreHandle_t xSemaphore;
+
 /************************************************************************/
 /* handler/callbacks                                                    */
 /************************************************************************/
@@ -68,7 +76,15 @@ QueueHandle_t xQueueTouch;
 */
 static void AFEC_pot_Callback(void){
 	g_ul_value = afec_channel_get_value(AFEC_POT, AFEC_POT_CHANNEL);
-	g_is_conversion_done = true;
+	/*g_is_conversion_done = true;*/
+	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+	printf("AFEC_callback \n");
+	xSemaphoreGiveFromISR(xSemaphore, &xHigherPriorityTaskWoken);
+	printf("semafaro tx \n");
+	
+	adcData adc;
+	adc.value = g_ul_value;
+	xQueueSendFromISR(xQueueADC, &adc, 0);
 }
 
 /************************************************************************/
@@ -92,8 +108,7 @@ signed char *pcTaskName)
 /**
 * \brief This function is called by FreeRTOS idle task
 */
-extern void vApplicationIdleHook(void)
-{
+extern void vApplicationIdleHook(void){
   pmc_sleep(SAM_PM_SMODE_SLEEP_WFI);
 }
 
@@ -251,6 +266,8 @@ void mxt_handler(struct mxt_device *device, uint *x, uint *y){
 /************************************************************************/
 
 void task_adc(void){
+	
+	xSemaphore = xSemaphoreCreateBinary();
 
 	/* inicializa e configura adc */
 	config_AFEC_pot(AFEC_POT, AFEC_POT_ID, AFEC_POT_CHANNEL, AFEC_pot_Callback);
@@ -258,11 +275,18 @@ void task_adc(void){
 	/* Selecina canal e inicializa conversão */
 	afec_channel_enable(AFEC_POT, AFEC_POT_CHANNEL);
 	afec_start_software_conversion(AFEC_POT);
+	
+	/*adcData adc;*/
+	
+	if (xSemaphore == NULL)	printf("falha em criar o semaforo \n");
 
 	while(1){
-		if(g_is_conversion_done){
+		if( xSemaphoreTake(xSemaphore, ( TickType_t ) 500) == pdTRUE ){
 			printf("Pot: %d\n", g_ul_value);
 			vTaskDelay(500);
+			
+// 			adc.value = g_ul_value;
+// 			xQueueSend(xQueueADC, &adc, 0);
 
 			/* Selecina canal e inicializa conversão */
 			afec_channel_enable(AFEC_POT, AFEC_POT_CHANNEL);
@@ -290,16 +314,19 @@ void task_mxt(void){
 
 void task_lcd(void){
   xQueueTouch = xQueueCreate( 10, sizeof( touchData ) );
+  xQueueADC   = xQueueCreate( 5, sizeof( adcData ) );
   
   // inicializa LCD e pinta de branco
   configure_lcd();
   draw_screen();
+  
+  adcData adc;
    
   // Escreve no LCD com fonts
   // criadas
-	font_draw_text(&sourcecodepro_28, "OIMUNDO", 50, 50, 1);
-	font_draw_text(&calibri_36, "Oi Mundo! #$!@", 50, 100, 1);
-	font_draw_text(&arial_72, "102456", 50, 200, 2);
+// 	font_draw_text(&sourcecodepro_28, "OIMUNDO", 50, 50, 1);
+// 	font_draw_text(&calibri_36, "Oi Mundo! #$!@", 50, 100, 1);
+// 	font_draw_text(&arial_72, "102456", 50, 200, 2);
   
   // strut local para armazenar msg enviada pela task do mxt
   touchData touch;
@@ -308,6 +335,36 @@ void task_lcd(void){
     if (xQueueReceive( xQueueTouch, &(touch), ( TickType_t )  500 / portTICK_PERIOD_MS)) {
       printf("Touch em: x:%d y:%d\n", touch.x, touch.y);
     }
+	
+	if (xQueueReceive( xQueueADC, &(adc), ( TickType_t )  100 / portTICK_PERIOD_MS)) {
+		     char b[512];
+		      sprintf(b, "%04d", adc.value);
+		      font_draw_text(&arial_72, b, 50, 200, 2);
+			  
+			  if (adc.value < 4096/4){
+				  ili9488_set_foreground_color(COLOR_CONVERT(COLOR_TOMATO));
+				  ili9488_draw_filled_rectangle(0, 100, ILI9488_LCD_WIDTH/4, 200);
+				  ili9488_set_foreground_color(COLOR_CONVERT(COLOR_WHITE));
+				  ili9488_draw_filled_rectangle(ILI9488_LCD_WIDTH, 0, ILI9488_LCD_WIDTH/4, 200);
+				  
+				  } else if(adc.value > 3*4096/4) {
+				  ili9488_set_foreground_color(COLOR_CONVERT(COLOR_TURQUOISE));
+				  ili9488_draw_filled_rectangle(0, 100, ILI9488_LCD_WIDTH, 200);
+				  ili9488_set_foreground_color(COLOR_CONVERT(COLOR_WHITE));
+				  ili9488_draw_filled_rectangle(ILI9488_LCD_WIDTH, 0, ILI9488_LCD_WIDTH, 200);
+				  
+				  } else if(adc.value > 2*4096/4) {
+				  ili9488_set_foreground_color(COLOR_CONVERT(COLOR_GREEN));
+				  ili9488_draw_filled_rectangle(0, 100, 3*ILI9488_LCD_WIDTH/4, 200);
+				  ili9488_set_foreground_color(COLOR_CONVERT(COLOR_WHITE));
+				  ili9488_draw_filled_rectangle(ILI9488_LCD_WIDTH, 0, 3*ILI9488_LCD_WIDTH/4, 200);
+				  } else {
+				  ili9488_set_foreground_color(COLOR_CONVERT(COLOR_YELLOW));
+				  ili9488_draw_filled_rectangle(0, 100, 2*ILI9488_LCD_WIDTH/4, 200);
+				  ili9488_set_foreground_color(COLOR_CONVERT(COLOR_WHITE));
+				  ili9488_draw_filled_rectangle(ILI9488_LCD_WIDTH, 0, 2*ILI9488_LCD_WIDTH/4, 200);
+			  }
+	   }
   }
 }
 
